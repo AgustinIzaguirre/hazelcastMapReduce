@@ -28,7 +28,6 @@
       <type>pom</type>
       <scope>import</scope>
     </dependency>
-
   </dependencies>
   <build>
     <testSourceDirectory>src/test/java</testSourceDirectory>
