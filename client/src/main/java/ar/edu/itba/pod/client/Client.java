@@ -37,7 +37,7 @@ public class Client {
 
         final KeyValueSource<Long, Movement> source = KeyValueSource.fromMap(movementsMap);
 
-        JobTracker jobTracker = hazelcastInstance.getJobTracker("word-count");
+        JobTracker jobTracker = hazelcastInstance.getJobTracker("query-1");
 
         Job<Long, Movement> job = jobTracker.newJob(source);
         ICompletableFuture<Map<String, Long>> future = job
@@ -50,6 +50,20 @@ public class Client {
         System.out.println("KMIA: " + result.get("KMIA"));
         System.out.println("SADP: " + result.get("SADP"));
 
+
+//
+//        JobTracker jobTracker = hazelcastInstance.getJobTracker("query-2");
+//
+//        Job<Long, Movement> job = jobTracker.newJob(source);
+//        ICompletableFuture<Map<String, Long>> future = job
+//                .mapper(new OaciAirportsMovementMapper())
+//                .reducer(new AirportsMovementReducerFactory())
+//                .submit();
+//        // Wait and retrieve the result
+//        Map<String, Long> result = future.get();
+//        System.out.println("SACO: " + result.get("SACO"));
+//        System.out.println("KMIA: " + result.get("KMIA"));
+//        System.out.println("SADP: " + result.get("SADP"));
 
         //load movements
 
