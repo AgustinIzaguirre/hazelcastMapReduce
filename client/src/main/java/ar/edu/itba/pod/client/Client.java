@@ -1,8 +1,10 @@
 package ar.edu.itba.pod.client;
 
+import ar.edu.itba.pod.mappers.OaciAirportsMovementMapper;
 import ar.edu.itba.pod.mappers.TokenizerMapper;
 import ar.edu.itba.pod.models.Airport;
 import ar.edu.itba.pod.models.Movement;
+import ar.edu.itba.pod.reducers.AirportsMovementReducerFactory;
 import ar.edu.itba.pod.reducers.WordCountReducerFactory;
 import com.hazelcast.client.HazelcastClient;
 import com.hazelcast.client.config.ClientConfig;
@@ -32,6 +34,23 @@ public class Client {
 
         fileLoader.loadAirports("aeropuertos.csv", airportsMap);
         fileLoader.loadMovements("movimientos.csv", movementsMap);
+
+        final KeyValueSource<Long, Movement> source = KeyValueSource.fromMap(movementsMap);
+
+        JobTracker jobTracker = hazelcastInstance.getJobTracker("word-count");
+
+        Job<Long, Movement> job = jobTracker.newJob(source);
+        ICompletableFuture<Map<String, Long>> future = job
+                .mapper(new OaciAirportsMovementMapper())
+                .reducer(new AirportsMovementReducerFactory())
+                .submit();
+        // Wait and retrieve the result
+        Map<String, Long> result = future.get();
+        System.out.println("SACO: " + result.get("SACO"));
+        System.out.println("KMIA: " + result.get("KMIA"));
+        System.out.println("SADP: " + result.get("SADP"));
+
+
         //load movements
 
 //        final IMap<String, String> map = hazelcastInstance.getMap("libros");
