@@ -2,6 +2,7 @@ package ar.edu.itba.pod.client;
 
 import ar.edu.itba.pod.mappers.TokenizerMapper;
 import ar.edu.itba.pod.models.Airport;
+import ar.edu.itba.pod.models.Movement;
 import ar.edu.itba.pod.reducers.WordCountReducerFactory;
 import com.hazelcast.client.HazelcastClient;
 import com.hazelcast.client.config.ClientConfig;
@@ -27,8 +28,10 @@ public class Client {
         final ClientConfig config = new XmlClientConfigBuilder("hazelcast.xml").build();
         final HazelcastInstance hazelcastInstance = HazelcastClient.newHazelcastClient(config);
         final IMap<String, Airport> airportsMap = hazelcastInstance.getMap("aeropuertos");
+        final IMap<Long, Movement> movementsMap = hazelcastInstance.getMap("movimientos");
 
         fileLoader.loadAirports("aeropuertos.csv", airportsMap);
+        fileLoader.loadMovements("movimientos.csv", movementsMap);
         //load movements
 
 //        final IMap<String, String> map = hazelcastInstance.getMap("libros");

@@ -4,25 +4,25 @@ import java.io.Serializable;
 
 public class Movement implements Serializable {
     //TODO add serializable UID
+    private static long quantity = 0;
+    private long id;
     private String movementType;
     private String flightClass;
     private String origin;
     private String destination;
     private String airline;
     private String clasification;
-    private String date;
-    private String time;
+
 
     public Movement(String type, String flightClass, String origin, String destination,
-                    String airline, String clasification, String date, String time) {
+                    String airline, String clasification) {
         movementType = type;
         this.flightClass = flightClass;
         this.origin = origin;
         this.destination = destination;
         this.airline = airline;
         this.clasification = clasification;
-        this.date = date;
-        this.time = time;
+        id = quantity++;
     }
 
     public String getClasification() {
@@ -48,25 +48,9 @@ public class Movement implements Serializable {
     public String getAirline() {
         return airline;
     }
-    public String getDate() {
-        return date;
-    }
-    public String getTime() {
-        return time;
-    }
-    public boolean equals(Object other) {
-        if(other == null || !other.getClass().equals(getClass())) {
-            return false;
-        }
 
-        Movement otherMovement = (Movement)other;
-        return movementType.equals(otherMovement.getMovementType()) &&
-                flightClass.equals(otherMovement.getFlightClass()) &&
-                origin.equals(otherMovement.getOrigin()) &&
-                destination.equals(otherMovement.getDestination()) &&
-                airline.equals(otherMovement.getAirline()) &&
-                date.equals(otherMovement.getDate()) &&
-                time.equals(otherMovement.getTime());
+    public long getId() {
+        return id;
     }
 
     //TODO make hashcode
