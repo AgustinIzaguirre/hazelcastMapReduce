@@ -1,5 +1,6 @@
 package ar.edu.itba.pod.client;
 
+import ar.edu.itba.pod.collators.OaciAirportsMovementCollator;
 import ar.edu.itba.pod.mappers.CabotageFlightsMapper;
 import ar.edu.itba.pod.mappers.DestinationAirportMapper;
 import ar.edu.itba.pod.mappers.OaciAirportsMovementMapper;
@@ -8,6 +9,7 @@ import ar.edu.itba.pod.models.Airport;
 import ar.edu.itba.pod.models.Movement;
 import ar.edu.itba.pod.reducers.AirportsMovementReducerFactory;
 import ar.edu.itba.pod.reducers.WordCountReducerFactory;
+import ar.edu.itba.pod.results.AirportsMovementResult;
 import com.hazelcast.client.HazelcastClient;
 import com.hazelcast.client.config.ClientConfig;
 import com.hazelcast.client.config.XmlClientConfigBuilder;
@@ -21,6 +23,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
@@ -46,7 +49,7 @@ public class Client {
 
     private static void solveQuery(int queryNumber, HazelcastInstance hazelcastInstance,
                                    IMap<String, Airport> airportsMap, IMap<Long, Movement> movementsMap)
-                                                            throws ExecutionException, InterruptedException {
+                                    throws ExecutionException, InterruptedException, IOException {
         switch (queryNumber) {
             case 1:
                 airportsMovementQuery(hazelcastInstance, airportsMap, movementsMap);
@@ -64,21 +67,18 @@ public class Client {
     }
 
     private static void airportsMovementQuery(HazelcastInstance hazelcastInstance, IMap<String, Airport> airportsMap,
-                                              IMap<Long, Movement> movementsMap) throws ExecutionException, InterruptedException {
+                                              IMap<Long, Movement> movementsMap) throws ExecutionException, InterruptedException, IOException {
         final KeyValueSource<Long, Movement> source = KeyValueSource.fromMap(movementsMap);
 
         JobTracker jobTracker = hazelcastInstance.getJobTracker("query-1");
 
         Job<Long, Movement> job = jobTracker.newJob(source);
-        ICompletableFuture<Map<String, Long>> future = job
+        ICompletableFuture<List<AirportsMovementResult>> future = job
                 .mapper(new OaciAirportsMovementMapper())
                 .reducer(new AirportsMovementReducerFactory())
-                .submit();
-        // Wait and retrieve the result
-        Map<String, Long> result = future.get();
-        System.out.println("SACO: " + result.get("SACO"));
-        System.out.println("KMIA: " + result.get("KMIA"));
-        System.out.println("SADP: " + result.get("SADP"));
+                .submit(new OaciAirportsMovementCollator());
+        List<AirportsMovementResult> result = future.get();
+        ResultWriter.writeResult1("output1.csv", result, airportsMap);
 
     }
 

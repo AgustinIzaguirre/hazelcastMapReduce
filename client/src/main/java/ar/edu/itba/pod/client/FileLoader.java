@@ -37,6 +37,7 @@ public class FileLoader {
                 }
             }
         } while(line != null);
+        airportReader.close();
     }
 
     private void loadAirportIndexes(String[] airportData) {
@@ -94,6 +95,7 @@ public class FileLoader {
                 }
             }
         } while(line != null);
+        movementReader.close();
     }
 
 

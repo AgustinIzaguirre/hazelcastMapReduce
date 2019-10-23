@@ -1,0 +1,28 @@
+package ar.edu.itba.pod.collators;
+
+import ar.edu.itba.pod.results.AirportsMovementResult;
+import com.hazelcast.mapreduce.Collator;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+public class OaciAirportsMovementCollator implements Collator<Map.Entry<String, Long>, List<AirportsMovementResult>> {
+    @Override
+    public List<AirportsMovementResult> collate(Iterable<Map.Entry<String, Long>> values ) {
+        long sum = 0;
+        List<AirportsMovementResult> resultList = new ArrayList<>();
+        values.forEach((entry)-> resultList.add(new AirportsMovementResult(entry.getKey(), entry.getValue())));
+        resultList.sort((r1,r2)->{
+            if(r1.getMovements() != r2.getMovements()) {
+                return r2.getMovements().compareTo(r1.getMovements());
+            }
+            else {
+                return r1.getOaciCode().compareTo(r2.getOaciCode());
+            }
+        });
+        return resultList;
+    }
+
+
+}
