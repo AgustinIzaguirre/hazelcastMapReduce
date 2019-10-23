@@ -44,7 +44,7 @@ public class Client {
         timeFile = new FileWriter("time.txt");//TODO replace with param
         timeFileWriter = new BufferedWriter(timeFile);
         loadData(airportsMap, movementsMap);
-        int queryNumber = 2;//TODO get from params
+        int queryNumber = 3;//TODO get from params
         solveQuery(queryNumber, hazelcastInstance, airportsMap, movementsMap);
         timeFileWriter.close();
         System.out.println("Finished\n");
@@ -119,7 +119,7 @@ public class Client {
 
     private static void pairAirportsWithSameThousands(HazelcastInstance hazelcastInstance,
                                                       IMap<Long, Movement> movementsMap)
-                                            throws ExecutionException, InterruptedException {
+                                            throws ExecutionException, InterruptedException, IOException {
         final KeyValueSource<Long, Movement> source = KeyValueSource.fromMap(movementsMap);
         JobTracker jobTracker = hazelcastInstance.getJobTracker("query-3");
         Job<Long, Movement> job = jobTracker.newJob(source);
@@ -127,8 +127,8 @@ public class Client {
                 .mapper(new OaciAirportsMovementMapper())   //TODO add combiner maybe
                 .reducer(new AirportsMovementReducerFactory())
                 .submit(new PairAirportCollator());
-       List<AirportPairResult> resultMap = future.get();
-
+       List<AirportPairResult> resultList = future.get();
+       ResultWriter.writeResult3("output4.csv", resultList);
     }
 
     private static void pairAirportsWithSameThousandsWithSecondMapReduce(HazelcastInstance hazelcastInstance, IMap<Long,

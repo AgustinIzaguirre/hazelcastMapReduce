@@ -40,7 +40,7 @@ public class PairAirportCollator implements Collator<Map.Entry<String, Long>, Li
         Map<Long, List<String>> airportsOfThousands = new HashMap<>();
         values.forEach(element -> {
             if(element.getValue() >= 1000) {
-                long thousands = element.getValue() / 1000;
+                long thousands = (element.getValue() / 1000) * 1000;
                 if(airportsOfThousands.get(thousands) == null) {
                     airportsOfThousands.put(thousands, new LinkedList<>()); //TODO improve with Java 8
                 }
