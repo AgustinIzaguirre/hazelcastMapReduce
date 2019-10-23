@@ -35,22 +35,53 @@ public class Client {
     private static Logger logger = LoggerFactory.getLogger(Client.class);
     private static FileWriter timeFile;
     private static BufferedWriter timeFileWriter;
+    private static int queryNumber;
+    private static String[] addresses;
+    private static String outputDirectoryPath = ".";
+    private static String inputDirectoryPath = ".";
+    private static String airportsFilePath = ".";
+    private static String movementFilePath = ".";
+    private static String resultFilePath;
+    private static String timeFilePath;
 
     public static void main(String[] args) throws ExecutionException, InterruptedException, IOException {
-        final ClientConfig config = new XmlClientConfigBuilder("hazelcast.xml").build();//TODO update with ips
+        queryNumber = 1;//TODO get from params
+        loadProperties();
+        ClientConfig config = loadClientConfig();
         final HazelcastInstance hazelcastInstance = HazelcastClient.newHazelcastClient(config);
         final IMap<String, Airport> airportsMap = hazelcastInstance.getMap("aeropuertos");
         final IMap<Long, Movement> movementsMap = hazelcastInstance.getMap("movimientos");
-        timeFile = new FileWriter("time.txt");//TODO replace with param
-        timeFileWriter = new BufferedWriter(timeFile);
         loadData(airportsMap, movementsMap);
-        int queryNumber = 1;//TODO get from params
         solveQuery(queryNumber, hazelcastInstance, airportsMap, movementsMap);
         timeFileWriter.close();
         System.out.println("Finished\n");
     }
 
+    private static void loadProperties() {
+//        queryNumber = Integer.parseInt(System.getProperty("queryNumber"));  // TODO use this on production
+//        addresses= System.getProperty("addresses").split(";");  // TODO use this on production
+//        inputDirectoryPath = System.getProperty("inPath");    // TODO use this on production
+//        outputDirectoryPath = System.getProperty("outPath");  // TODO use this on production
+        airportsFilePath = inputDirectoryPath + "/aeropuertos.csv";
+        movementFilePath = inputDirectoryPath + "/movimientos.csv";
+//        resultFilePath = outputDirectoryPath + "/query" + queryNumber + ".csv"; // TODO use this on production
+
+        resultFilePath = outputDirectoryPath + "/query" + queryNumber + "_v2.csv";
+        timeFilePath = outputDirectoryPath + "/query" + queryNumber + ".txt";
+        if(queryNumber < 1 || queryNumber > 4) {
+            //TODO throw exception
+        }
+    }
+
+    private static ClientConfig loadClientConfig() throws IOException {
+        final ClientConfig config = new XmlClientConfigBuilder("hazelcast.xml").build();//TODO update with ips
+        return config;
+    }
+
     private static void loadData(IMap<String, Airport> airportsMap, IMap<Long, Movement> movementsMap) throws IOException {
+        //set time file parameters
+        timeFile = new FileWriter(timeFilePath) ;//TODO replace with param
+        timeFileWriter = new BufferedWriter(timeFile);
         //clear maps
         airportsMap.clear();
         movementsMap.clear();
@@ -99,7 +130,7 @@ public class Client {
                 .reducer(new AirportsMovementReducerFactory())
                 .submit(new OaciAirportsMovementCollator());
         List<AirportsMovementResult> result = future.get();
-        ResultWriter.writeResult1("output1.csv", result, airportsMap);
+        ResultWriter.writeResult1(resultFilePath, result, airportsMap);
 
     }
 
@@ -114,7 +145,7 @@ public class Client {
                 .reducer(new AirportsMovementReducerFactory())
                 .submit(new CabotageFlightsCollator(quantity));
         List<AirportsMovementResult> result = future.get();
-        ResultWriter.writeResult2("output2.csv", result);
+        ResultWriter.writeResult2(resultFilePath, result);
     }
 
     private static void pairAirportsWithSameThousands(HazelcastInstance hazelcastInstance,
@@ -128,7 +159,7 @@ public class Client {
                 .reducer(new AirportsMovementReducerFactory())
                 .submit(new PairAirportCollator());
        List<AirportPairResult> resultList = future.get();
-       ResultWriter.writeResult3("output3.csv", resultList);
+       ResultWriter.writeResult3(resultFilePath, resultList);
     }
 
     private static void pairAirportsWithSameThousandsWithSecondMapReduce(HazelcastInstance hazelcastInstance, IMap<Long,
@@ -184,7 +215,7 @@ public class Client {
                 .reducer(new AirportsMovementReducerFactory())
                 .submit(new DestinationAirportCollator(quantity));
         List<AirportsMovementResult> result = future.get();
-        ResultWriter.writeResult4("output4.csv", result);
+        ResultWriter.writeResult4(resultFilePath, result);
     }
 
 }
