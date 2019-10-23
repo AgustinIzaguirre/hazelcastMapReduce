@@ -50,13 +50,22 @@ public class Client {
         System.out.println("KMIA: " + result.get("KMIA"));
         System.out.println("SADP: " + result.get("SADP"));
 
-
+//        final KeyValueSource<Long, Movement> source = KeyValueSource.fromMap(movementsMap);
 //
 //        JobTracker jobTracker = hazelcastInstance.getJobTracker("query-2");
 //
 //        Job<Long, Movement> job = jobTracker.newJob(source);
 //        ICompletableFuture<Map<String, Long>> future = job
-//                .mapper(new OaciAirportsMovementMapper())
+//                .mapper(new CabotageFlightsMapper())
+//                .reducer(new AirportsMovementReducerFactory())
+//                .submit();
+
+//
+//        JobTracker jobTracker = hazelcastInstance.getJobTracker("query-4");
+//
+//        Job<Long, Movement> job = jobTracker.newJob(source);
+//        ICompletableFuture<Map<String, Long>> future = job
+//                .mapper(new DestinationAirportMapper())
 //                .reducer(new AirportsMovementReducerFactory())
 //                .submit();
 //        // Wait and retrieve the result
