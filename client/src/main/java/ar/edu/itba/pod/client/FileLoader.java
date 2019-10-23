@@ -115,7 +115,7 @@ public class FileLoader {
             else if(currentType.equals("Clase de Vuelo")) {
                 flightClassIndex = i;
             }
-            else if(currentType.equals("Clasificación Vuelo")) {
+            else if(currentType.length() > 11 && currentType.substring(0,10).equals("Clasificac")) {
                 clasificationIndex = i;
             }
             else if(currentType.equals("Tipo de Movimiento")) {

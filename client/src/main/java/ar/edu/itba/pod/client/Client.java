@@ -105,7 +105,7 @@ public class Client {
 
     private static void cabotagePercentage(HazelcastInstance hazelcastInstance, IMap<Long, Movement> movementsMap)
                                                         throws ExecutionException, InterruptedException, IOException {
-        long quantity = 2;
+        long quantity = 5;
         final KeyValueSource<Long, Movement> source = KeyValueSource.fromMap(movementsMap);
         JobTracker jobTracker = hazelcastInstance.getJobTracker("query-2");
         Job<Long, Movement> job = jobTracker.newJob(source);
