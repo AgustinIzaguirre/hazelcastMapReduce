@@ -20,14 +20,16 @@ public class ResultWriter {
                                     IMap<String, Airport> airportsMap) throws IOException {
         FileWriter result1File = new FileWriter(outputFilePath);
         BufferedWriter result1Writer = new BufferedWriter(result1File);
-        result1Writer.write("OACI;Denominación;Movimientos\n");
+        result1Writer.write("OACI;Denominación;Movimientos\n");
         resultList.forEach(element-> {
             Optional<Airport> airport = Optional.ofNullable(airportsMap.get(element.getKey()));
-            String denomination = airport.isPresent() ? airport.get().getName() : "";
-            try {
-                result1Writer.write(element.getKey() + ";" + denomination + ";" + element.getMovements() + "\n");
-            } catch (IOException e) {
-                e.printStackTrace();
+            if(airport.isPresent()) { //TODO mejorar con java 8
+                String denomination = airport.isPresent() ? airport.get().getName() : "";
+                try {
+                    result1Writer.write(element.getKey() + ";" + denomination + ";" + element.getMovements() + "\n");
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         });
 
@@ -45,7 +47,6 @@ public class ResultWriter {
 //                double percentage = 100 * ((double)element.getMovements() / (double)total.get());  Rounded
                 double percentage = 100 * ((double)element.getMovements() / (double)total.get());
                 percentage = Math.floor(percentage * 100) / 100; // Truncated
-                System.out.println(element.getKey() + ": " + percentage + "\n");//TODO remove
                 String percentageFormated = new DecimalFormat("#.00").format(percentage) + "%";
                 percentageFormated = percentageFormated.charAt(0) == '.' ? 0 + percentageFormated : percentageFormated;
                 result2Writer.write(element.getKey() + ";" + percentageFormated + "\n");

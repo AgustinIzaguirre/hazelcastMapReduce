@@ -44,7 +44,7 @@ public class Client {
         timeFile = new FileWriter("time.txt");//TODO replace with param
         timeFileWriter = new BufferedWriter(timeFile);
         loadData(airportsMap, movementsMap);
-        int queryNumber = 2;//TODO get from params
+        int queryNumber = 1;//TODO get from params
         solveQuery(queryNumber, hazelcastInstance, airportsMap, movementsMap);
         timeFileWriter.close();
         System.out.println("Finished\n");
