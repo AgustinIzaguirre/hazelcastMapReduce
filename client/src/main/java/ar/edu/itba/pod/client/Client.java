@@ -1,5 +1,7 @@
 package ar.edu.itba.pod.client;
 
+import ar.edu.itba.pod.mappers.CabotageFlightsMapper;
+import ar.edu.itba.pod.mappers.DestinationAirportMapper;
 import ar.edu.itba.pod.mappers.OaciAirportsMovementMapper;
 import ar.edu.itba.pod.mappers.TokenizerMapper;
 import ar.edu.itba.pod.models.Airport;
@@ -31,10 +33,38 @@ public class Client {
         final HazelcastInstance hazelcastInstance = HazelcastClient.newHazelcastClient(config);
         final IMap<String, Airport> airportsMap = hazelcastInstance.getMap("aeropuertos");
         final IMap<Long, Movement> movementsMap = hazelcastInstance.getMap("movimientos");
-
+        //clear maps
+        airportsMap.clear();
+        movementsMap.clear();
+        //load maps
         fileLoader.loadAirports("aeropuertos.csv", airportsMap);
         fileLoader.loadMovements("movimientos.csv", movementsMap);
+        int queryNumber = 1;//TODO get from params
+        solveQuery(queryNumber, hazelcastInstance, airportsMap, movementsMap);
 
+    }
+
+    private static void solveQuery(int queryNumber, HazelcastInstance hazelcastInstance,
+                                   IMap<String, Airport> airportsMap, IMap<Long, Movement> movementsMap)
+                                                            throws ExecutionException, InterruptedException {
+        switch (queryNumber) {
+            case 1:
+                airportsMovementQuery(hazelcastInstance, airportsMap, movementsMap);
+                break;
+            case 2:
+                cabotagePercentage(hazelcastInstance, airportsMap, movementsMap);
+
+                break;
+            case 3:
+                destinationAirports(hazelcastInstance, airportsMap, movementsMap);
+                break;
+            case 4:
+                break;
+        }
+    }
+
+    private static void airportsMovementQuery(HazelcastInstance hazelcastInstance, IMap<String, Airport> airportsMap,
+                                              IMap<Long, Movement> movementsMap) throws ExecutionException, InterruptedException {
         final KeyValueSource<Long, Movement> source = KeyValueSource.fromMap(movementsMap);
 
         JobTracker jobTracker = hazelcastInstance.getJobTracker("query-1");
@@ -50,50 +80,32 @@ public class Client {
         System.out.println("KMIA: " + result.get("KMIA"));
         System.out.println("SADP: " + result.get("SADP"));
 
-//        final KeyValueSource<Long, Movement> source = KeyValueSource.fromMap(movementsMap);
-//
-//        JobTracker jobTracker = hazelcastInstance.getJobTracker("query-2");
-//
-//        Job<Long, Movement> job = jobTracker.newJob(source);
-//        ICompletableFuture<Map<String, Long>> future = job
-//                .mapper(new CabotageFlightsMapper())
-//                .reducer(new AirportsMovementReducerFactory())
-//                .submit();
+    }
 
-//
-//        JobTracker jobTracker = hazelcastInstance.getJobTracker("query-4");
-//
-//        Job<Long, Movement> job = jobTracker.newJob(source);
-//        ICompletableFuture<Map<String, Long>> future = job
-//                .mapper(new DestinationAirportMapper())
-//                .reducer(new AirportsMovementReducerFactory())
-//                .submit();
-//        // Wait and retrieve the result
-//        Map<String, Long> result = future.get();
-//        System.out.println("SACO: " + result.get("SACO"));
-//        System.out.println("KMIA: " + result.get("KMIA"));
-//        System.out.println("SADP: " + result.get("SADP"));
+    private static void cabotagePercentage(HazelcastInstance hazelcastInstance, IMap<String, Airport> airportsMap,
+                                           IMap<Long, Movement> movementsMap) throws ExecutionException, InterruptedException {
+        final KeyValueSource<Long, Movement> source = KeyValueSource.fromMap(movementsMap);
+        JobTracker jobTracker = hazelcastInstance.getJobTracker("query-2");
+        Job<Long, Movement> job = jobTracker.newJob(source);
+        ICompletableFuture<Map<String, Long>> future = job
+                .mapper(new CabotageFlightsMapper())
+                .reducer(new AirportsMovementReducerFactory())
+                .submit();
+        Map<String, Long> result = future.get();
 
-        //load movements
+    }
 
-//        final IMap<String, String> map = hazelcastInstance.getMap("libros");
-//        final KeyValueSource<String, String> source = KeyValueSource.fromMap(map);
-//
-//        JobTracker jobTracker = hazelcastInstance.getJobTracker("word-count");
-//
-//        Job<String, String> job = jobTracker.newJob(source);
-//        ICompletableFuture<Map<String, Long>> future = job
-//                .mapper(new TokenizerMapper())
-//                .reducer(new WordCountReducerFactory())
-//                .submit();
-//        // Wait and retrieve the result
-//        Map<String, Long> result = future.get();
-//        System.out.println("hola: " + result.get("hola"));
-//        System.out.println("como: " + result.get("como"));
-//        System.out.println("va: " + result.get("va"));
-//        System.out.println("que: " + result.get("que"));
-//        System.out.println("tal: " + result.get("tal"));
-//        System.out.println("mundo: " + result.get("mundo"));
+    private static void destinationAirports(HazelcastInstance hazelcastInstance, IMap<String, Airport> airportsMap,
+                                            IMap<Long, Movement> movementsMap) throws ExecutionException, InterruptedException {
+        String specifiedOaci = "SACO";//TODO replace with param
+        JobTracker jobTracker = hazelcastInstance.getJobTracker("query-4");
+        final KeyValueSource<Long, Movement> source = KeyValueSource.fromMap(movementsMap);
+        Job<Long, Movement> job = jobTracker.newJob(source);
+        ICompletableFuture<Map<String, Long>> future = job
+                .mapper(new DestinationAirportMapper(specifiedOaci))
+                .reducer(new AirportsMovementReducerFactory())
+                .submit();
+        Map<String, Long> result = future.get();
 
     }
 
