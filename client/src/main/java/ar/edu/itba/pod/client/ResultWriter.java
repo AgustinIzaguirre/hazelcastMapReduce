@@ -8,7 +8,9 @@ import com.hazelcast.core.IMap;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.sql.Timestamp;
 import java.text.DecimalFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
@@ -82,5 +84,10 @@ public class ResultWriter {
         result4Writer.close();
     }
 
+    public static void writeTime(BufferedWriter outputFileWriter, String message) throws IOException {
+        long time = new Date().getTime();
+        Timestamp currentTime = new Timestamp(time);
+        outputFileWriter.write(currentTime + "\tINFO Client -" + "\t" + message + "\n");
+    }
 
 }

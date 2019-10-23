@@ -27,6 +27,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.xml.transform.Result;
+import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.List;
@@ -35,27 +36,39 @@ import java.util.concurrent.ExecutionException;
 
 public class Client {
     private static Logger logger = LoggerFactory.getLogger(Client.class);
+    private static FileWriter timeFile;
+    private static BufferedWriter timeFileWriter;
 
     public static void main(String[] args) throws ExecutionException, InterruptedException, IOException {
-        FileLoader fileLoader = new FileLoader();
         final ClientConfig config = new XmlClientConfigBuilder("hazelcast.xml").build();//TODO update with ips
         final HazelcastInstance hazelcastInstance = HazelcastClient.newHazelcastClient(config);
         final IMap<String, Airport> airportsMap = hazelcastInstance.getMap("aeropuertos");
         final IMap<Long, Movement> movementsMap = hazelcastInstance.getMap("movimientos");
+        timeFile = new FileWriter("time.txt");//TODO replace with param
+        timeFileWriter = new BufferedWriter(timeFile);
+        loadData(airportsMap, movementsMap);
+        int queryNumber = 2;//TODO get from params
+        solveQuery(queryNumber, hazelcastInstance, airportsMap, movementsMap);
+        timeFileWriter.close();
+
+    }
+
+    private static void loadData(IMap<String, Airport> airportsMap, IMap<Long, Movement> movementsMap) throws IOException {
         //clear maps
         airportsMap.clear();
         movementsMap.clear();
         //load maps
+        FileLoader fileLoader = new FileLoader();
+        ResultWriter.writeTime(timeFileWriter, "Inicio de la lectura del archivo");
         fileLoader.loadAirports("aeropuertos.csv", airportsMap);
         fileLoader.loadMovements("movimientos.csv", movementsMap);
-        int queryNumber = 2;//TODO get from params
-        solveQuery(queryNumber, hazelcastInstance, airportsMap, movementsMap);
-
+        ResultWriter.writeTime(timeFileWriter, "Fin de lectura del archivo");
     }
 
     private static void solveQuery(int queryNumber, HazelcastInstance hazelcastInstance,
                                    IMap<String, Airport> airportsMap, IMap<Long, Movement> movementsMap)
                                     throws ExecutionException, InterruptedException, IOException {
+        ResultWriter.writeTime(timeFileWriter, "Inicio del trabajo map/reduce");
         switch (queryNumber) {
             case 1:
                 airportsMovementQuery(hazelcastInstance, airportsMap, movementsMap);
@@ -71,6 +84,8 @@ public class Client {
                 destinationAirports(hazelcastInstance, movementsMap);
                 break;
         }
+        ResultWriter.writeTime(timeFileWriter, "Fin del trabajo map/reduce");
+
     }
 
 
@@ -83,7 +98,7 @@ public class Client {
 
         Job<Long, Movement> job = jobTracker.newJob(source);
         ICompletableFuture<List<AirportsMovementResult>> future = job
-                .mapper(new OaciAirportsMovementMapper())
+                .mapper(new OaciAirportsMovementMapper())   //TODO add combiner maybe
                 .reducer(new AirportsMovementReducerFactory())
                 .submit(new OaciAirportsMovementCollator());
         List<AirportsMovementResult> result = future.get();
@@ -98,7 +113,7 @@ public class Client {
         final KeyValueSource<Long, Movement> source = KeyValueSource.fromMap(movementsMap);
         Job<Long, Movement> job = jobTracker.newJob(source);
         ICompletableFuture<List<AirportsMovementResult>> future = job
-                .mapper(new CabotageFlightsMapper())
+                .mapper(new CabotageFlightsMapper())    //TODO add combiner maybe
                 .reducer(new AirportsMovementReducerFactory())
                 .submit(new CabotageFlightsCollator(quantity));
         List<AirportsMovementResult> result = future.get();
@@ -112,7 +127,7 @@ public class Client {
         JobTracker jobTracker = hazelcastInstance.getJobTracker("query-3");
         Job<Long, Movement> job = jobTracker.newJob(source);
         ICompletableFuture<List<AirportPairResult>> future = job
-                .mapper(new OaciAirportsMovementMapper())
+                .mapper(new OaciAirportsMovementMapper())   //TODO add combiner maybe
                 .reducer(new AirportsMovementReducerFactory())
                 .submit(new PairAirportCollator());
        List<AirportPairResult> resultMap = future.get();
@@ -145,8 +160,11 @@ public class Client {
 //                .submit();
 //        Map<String, Long> airportMovementMap = future.get();
 //
+
 //        ResultWriter.writeResult1("output1.csv", result, airportsMap);
         //TODO
+        //clear map
+        airportMovementMap.clear();
 
     }
 
@@ -165,7 +183,7 @@ public class Client {
         final KeyValueSource<Long, Movement> source = KeyValueSource.fromMap(movementsMap);
         Job<Long, Movement> job = jobTracker.newJob(source);
         ICompletableFuture<List<AirportsMovementResult>> future = job
-                .mapper(new DestinationAirportMapper(specifiedOaci))
+                .mapper(new DestinationAirportMapper(specifiedOaci))    //TODO add combiner maybe
                 .reducer(new AirportsMovementReducerFactory())
                 .submit(new DestinationAirportCollator(quantity));
         List<AirportsMovementResult> result = future.get();
