@@ -13,9 +13,8 @@ public class DestinationAirportMapper implements Mapper<Long, Movement, String, 
 
     @Override
     public void map(Long id, Movement movement, Context<String, Long> context) {
-        if(movement.getOrigin().equals(origin)) {
+        if(movement.getOrigin().equals(origin) && movement.getMovementType().equals("Despegue")) {//TODO maybe on file loader add everything lowercase and compare always lowercase
             context.emit(movement.getDestination(), 1L);
-
         }
     }
 }

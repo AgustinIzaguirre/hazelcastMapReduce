@@ -7,7 +7,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class OaciAirportsMovementCollator implements Collator<Map.Entry<String, Long>, List<AirportsMovementResult>> {
+public class DestinationAirportCollator implements Collator<Map.Entry<String, Long>, List<AirportsMovementResult>> {
+
+    private long quantity;
+
+    public DestinationAirportCollator(long quantity) {
+        this.quantity = quantity;
+    }
 
     @Override
     public List<AirportsMovementResult> collate(Iterable<Map.Entry<String, Long>> values ) {
@@ -21,6 +27,7 @@ public class OaciAirportsMovementCollator implements Collator<Map.Entry<String, 
                 return r1.getOaciCode().compareTo(r2.getOaciCode());
             }
         });
-        return resultList;
+
+        return resultList.subList(0, (int)quantity);
     }
 }

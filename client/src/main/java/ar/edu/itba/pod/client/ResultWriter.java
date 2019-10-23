@@ -11,9 +11,9 @@ import java.util.List;
 import java.util.Optional;
 
 public class ResultWriter {
-    public static void writeResult1(String path, List<AirportsMovementResult> resultList,
+    public static void writeResult1(String outputFilePath, List<AirportsMovementResult> resultList,
                                     IMap<String, Airport> airportsMap) throws IOException {
-        FileWriter result1File = new FileWriter(path);
+        FileWriter result1File = new FileWriter(outputFilePath);
         BufferedWriter result1Writer = new BufferedWriter(result1File);
         result1Writer.write("OACI;Denominación;Movimientos\n");
         resultList.forEach(element-> {
@@ -27,5 +27,20 @@ public class ResultWriter {
         });
 
         result1Writer.close();
+    }
+
+    public static void writeResult4(String outputFilePath, List<AirportsMovementResult> resultList) throws IOException {
+        FileWriter result4File = new FileWriter(outputFilePath);
+        BufferedWriter result4Writer = new BufferedWriter(result4File);
+        result4Writer.write("OACI;Despegues\n");
+        resultList.forEach(element-> {
+            try {
+                result4Writer.write(element.getOaciCode() + ";" + element.getMovements() + "\n");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
+
+        result4Writer.close();
     }
 }
