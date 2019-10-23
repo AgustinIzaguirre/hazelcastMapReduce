@@ -3,6 +3,7 @@ package ar.edu.itba.pod.client;
 import ar.edu.itba.pod.collators.CabotageFlightsCollator;
 import ar.edu.itba.pod.collators.DestinationAirportCollator;
 import ar.edu.itba.pod.collators.OaciAirportsMovementCollator;
+import ar.edu.itba.pod.collators.PairAirportCollator;
 import ar.edu.itba.pod.mappers.CabotageFlightsMapper;
 import ar.edu.itba.pod.mappers.DestinationAirportMapper;
 import ar.edu.itba.pod.mappers.OaciAirportsMovementMapper;
@@ -11,6 +12,7 @@ import ar.edu.itba.pod.models.Airport;
 import ar.edu.itba.pod.models.Movement;
 import ar.edu.itba.pod.reducers.AirportsMovementReducerFactory;
 import ar.edu.itba.pod.reducers.WordCountReducerFactory;
+import ar.edu.itba.pod.results.AirportPairResult;
 import ar.edu.itba.pod.results.AirportsMovementResult;
 import com.hazelcast.client.HazelcastClient;
 import com.hazelcast.client.config.ClientConfig;
@@ -62,12 +64,16 @@ public class Client {
                 cabotagePercentage(hazelcastInstance, movementsMap);
                 break;
             case 3:
+                pairAirportsWithSameThousands(hazelcastInstance, movementsMap);
+//                pairAirportsWithSameThousandsWithSecondMapReduce(hazelcastInstance, movementsMap);
                 break;
             case 4:
                 destinationAirports(hazelcastInstance, movementsMap);
                 break;
         }
     }
+
+
 
     private static void airportsMovementQuery(HazelcastInstance hazelcastInstance, IMap<String, Airport> airportsMap,
                                               IMap<Long, Movement> movementsMap) throws ExecutionException, InterruptedException, IOException {
@@ -98,6 +104,58 @@ public class Client {
         List<AirportsMovementResult> result = future.get();
         ResultWriter.writeResult2("output2.csv", result);
     }
+
+    private static void pairAirportsWithSameThousands(HazelcastInstance hazelcastInstance,
+                                                      IMap<Long, Movement> movementsMap)
+                                            throws ExecutionException, InterruptedException {
+        final KeyValueSource<Long, Movement> source = KeyValueSource.fromMap(movementsMap);
+        JobTracker jobTracker = hazelcastInstance.getJobTracker("query-3");
+        Job<Long, Movement> job = jobTracker.newJob(source);
+        ICompletableFuture<List<AirportPairResult>> future = job
+                .mapper(new OaciAirportsMovementMapper())
+                .reducer(new AirportsMovementReducerFactory())
+                .submit(new PairAirportCollator());
+       List<AirportPairResult> resultMap = future.get();
+
+    }
+
+    private static void pairAirportsWithSameThousandsWithSecondMapReduce(HazelcastInstance hazelcastInstance, IMap<Long,
+                                                                            Movement> movementsMap)
+                                                                            throws ExecutionException, InterruptedException {
+
+        //first MapReduce
+        final KeyValueSource<Long, Movement> source = KeyValueSource.fromMap(movementsMap);
+        JobTracker jobTracker = hazelcastInstance.getJobTracker("preCalculation");
+        Job<Long, Movement> job = jobTracker.newJob(source);
+        ICompletableFuture<Map<String, Long>> future = job
+                .mapper(new OaciAirportsMovementMapper())
+                .reducer(new AirportsMovementReducerFactory())
+                .submit();
+        Map<String, Long> resultMap = future.get();
+
+        //second MapReduce
+        String mapName = "airportMovementMap";
+        IMap<String, Long> airportMovementMap = loadMap(hazelcastInstance, resultMap, mapName);
+        final KeyValueSource<String, Long> secondSource = KeyValueSource.fromMap(airportMovementMap);
+        jobTracker = hazelcastInstance.getJobTracker("query-3");
+        Job<String, Long> secondJob = jobTracker.newJob(secondSource);
+//        ICompletableFuture<Map<String, Long>> future = job
+//                .mapper(new OaciAirportsMovementMapper())
+//                .reducer(new AirportsMovementReducerFactory())
+//                .submit();
+//        Map<String, Long> airportMovementMap = future.get();
+//
+//        ResultWriter.writeResult1("output1.csv", result, airportsMap);
+        //TODO
+
+    }
+
+    private static IMap<String,Long> loadMap(HazelcastInstance hazelcastInstance, Map<String, Long> resultMap, String mapName) {
+        IMap<String, Long> airportMovementMap = hazelcastInstance.getMap(mapName);
+        resultMap.forEach((key, value)-> airportMovementMap.put(key, value));
+        return airportMovementMap;
+    }
+
 
     private static void destinationAirports(HazelcastInstance hazelcastInstance, IMap<Long, Movement> movementsMap)
                                                         throws ExecutionException, InterruptedException, IOException {

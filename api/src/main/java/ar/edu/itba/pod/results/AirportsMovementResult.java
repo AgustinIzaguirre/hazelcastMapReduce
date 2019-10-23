@@ -1,6 +1,9 @@
 package ar.edu.itba.pod.results;
 
-public class AirportsMovementResult {
+import java.io.Serializable;
+
+public class AirportsMovementResult implements Serializable {
+    //TODO add serializable UID
     private String key;
     private Long movements;
 

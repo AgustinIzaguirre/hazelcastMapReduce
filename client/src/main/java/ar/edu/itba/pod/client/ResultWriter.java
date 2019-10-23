@@ -1,6 +1,7 @@
 package ar.edu.itba.pod.client;
 
 import ar.edu.itba.pod.models.Airport;
+import ar.edu.itba.pod.results.AirportPairResult;
 import ar.edu.itba.pod.results.AirportsMovementResult;
 import com.hazelcast.core.IMap;
 
@@ -36,7 +37,7 @@ public class ResultWriter {
         BufferedWriter result2Writer = new BufferedWriter(result2File);
         AtomicLong total = new AtomicLong();
         resultList.forEach(element -> total.addAndGet(element.getMovements()));
-        result2Writer.write("OACI;Despegues\n");
+        result2Writer.write("Aerolinea;Porcentaje\n");
         resultList.forEach(element-> {
             try {
                 double percentage = 100 * ((double)element.getMovements() / (double)total.get());
@@ -49,6 +50,21 @@ public class ResultWriter {
         });
 
         result2Writer.close();
+    }
+
+    public static void writeResult3(String outputFilePath, List<AirportPairResult> resultList) throws IOException {
+        FileWriter result3File = new FileWriter(outputFilePath);
+        BufferedWriter result3Writer = new BufferedWriter(result3File);
+        result3Writer.write("Grupo;Aeropuerto A;Aeropuerto B\n");
+        resultList.forEach(element-> {
+            try {
+                result3Writer.write(element.getMovements() + ";" + element.getFirst() + ";" + element.getSecond() + "\n");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
+
+        result3Writer.close();
     }
 
     public static void writeResult4(String outputFilePath, List<AirportsMovementResult> resultList) throws IOException {
