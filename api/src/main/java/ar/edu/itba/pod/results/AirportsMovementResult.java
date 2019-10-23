@@ -1,16 +1,16 @@
 package ar.edu.itba.pod.results;
 
 public class AirportsMovementResult {
-    private String oaciCode;
+    private String key;
     private Long movements;
 
-    public AirportsMovementResult(String oaciCode, Long movements) {
-        this.oaciCode = oaciCode;
+    public AirportsMovementResult(String key, Long movements) {
+        this.key = key;
         this.movements = movements;
     }
 
-    public String getOaciCode() {
-        return oaciCode;
+    public String getKey() {
+        return key;
     }
 
     public Long getMovements() {

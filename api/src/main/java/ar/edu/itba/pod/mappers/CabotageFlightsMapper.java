@@ -9,8 +9,12 @@ public class CabotageFlightsMapper implements Mapper<Long, Movement, String, Lon
     @Override
     public void map(Long id, Movement movement, Context<String, Long> context) {
         if(movement.getClasification().equals("Cabotaje")) {
-            context.emit(movement.getOrigin(), 1L);
-            context.emit(movement.getDestination(), 1L);
+            if(movement.getAirline() != null && !movement.getAirline().equals("N/A")) {
+                context.emit(movement.getAirline(), 1L);
+            }
+            else {
+                context.emit("Otros", 1L);
+            }
         }
     }
 }

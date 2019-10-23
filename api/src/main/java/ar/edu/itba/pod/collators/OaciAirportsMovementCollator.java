@@ -18,7 +18,7 @@ public class OaciAirportsMovementCollator implements Collator<Map.Entry<String, 
                 return r2.getMovements().compareTo(r1.getMovements());
             }
             else {
-                return r1.getOaciCode().compareTo(r2.getOaciCode());
+                return r1.getKey().compareTo(r2.getKey());
             }
         });
         return resultList;

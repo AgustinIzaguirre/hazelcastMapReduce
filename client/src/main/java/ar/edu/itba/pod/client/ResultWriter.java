@@ -7,8 +7,10 @@ import com.hazelcast.core.IMap;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.text.DecimalFormat;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicLong;
 
 public class ResultWriter {
     public static void writeResult1(String outputFilePath, List<AirportsMovementResult> resultList,
@@ -17,10 +19,10 @@ public class ResultWriter {
         BufferedWriter result1Writer = new BufferedWriter(result1File);
         result1Writer.write("OACI;Denominación;Movimientos\n");
         resultList.forEach(element-> {
-            Optional<Airport> airport = Optional.ofNullable(airportsMap.get(element.getOaciCode()));
+            Optional<Airport> airport = Optional.ofNullable(airportsMap.get(element.getKey()));
             String denomination = airport.isPresent() ? airport.get().getName() : "";
             try {
-                result1Writer.write(element.getOaciCode() + ";" + denomination + ";" + element.getMovements() + "\n");
+                result1Writer.write(element.getKey() + ";" + denomination + ";" + element.getMovements() + "\n");
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -29,13 +31,33 @@ public class ResultWriter {
         result1Writer.close();
     }
 
+    public static void writeResult2(String outputFilePath, List<AirportsMovementResult> resultList) throws IOException {
+        FileWriter result2File = new FileWriter(outputFilePath);
+        BufferedWriter result2Writer = new BufferedWriter(result2File);
+        AtomicLong total = new AtomicLong();
+        resultList.forEach(element -> total.addAndGet(element.getMovements()));
+        result2Writer.write("OACI;Despegues\n");
+        resultList.forEach(element-> {
+            try {
+                double percentage = 100 * ((double)element.getMovements() / (double)total.get());
+                String percentageFormated = new DecimalFormat("#.00").format(percentage) + "%";
+                percentageFormated = percentageFormated.charAt(0) == '.' ? 0 + percentageFormated : percentageFormated;
+                result2Writer.write(element.getKey() + ";" + percentageFormated + "\n");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
+
+        result2Writer.close();
+    }
+
     public static void writeResult4(String outputFilePath, List<AirportsMovementResult> resultList) throws IOException {
         FileWriter result4File = new FileWriter(outputFilePath);
         BufferedWriter result4Writer = new BufferedWriter(result4File);
         result4Writer.write("OACI;Despegues\n");
         resultList.forEach(element-> {
             try {
-                result4Writer.write(element.getOaciCode() + ";" + element.getMovements() + "\n");
+                result4Writer.write(element.getKey() + ";" + element.getMovements() + "\n");
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -43,4 +65,6 @@ public class ResultWriter {
 
         result4Writer.close();
     }
+
+
 }

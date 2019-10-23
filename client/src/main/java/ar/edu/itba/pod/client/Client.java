@@ -1,5 +1,6 @@
 package ar.edu.itba.pod.client;
 
+import ar.edu.itba.pod.collators.CabotageFlightsCollator;
 import ar.edu.itba.pod.collators.DestinationAirportCollator;
 import ar.edu.itba.pod.collators.OaciAirportsMovementCollator;
 import ar.edu.itba.pod.mappers.CabotageFlightsMapper;
@@ -23,6 +24,8 @@ import com.hazelcast.mapreduce.KeyValueSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.xml.transform.Result;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
@@ -43,7 +46,7 @@ public class Client {
         //load maps
         fileLoader.loadAirports("aeropuertos.csv", airportsMap);
         fileLoader.loadMovements("movimientos.csv", movementsMap);
-        int queryNumber = 4;//TODO get from params
+        int queryNumber = 2;//TODO get from params
         solveQuery(queryNumber, hazelcastInstance, airportsMap, movementsMap);
 
     }
@@ -56,12 +59,12 @@ public class Client {
                 airportsMovementQuery(hazelcastInstance, airportsMap, movementsMap);
                 break;
             case 2:
-                cabotagePercentage(hazelcastInstance, airportsMap, movementsMap);
+                cabotagePercentage(hazelcastInstance, movementsMap);
                 break;
             case 3:
                 break;
             case 4:
-                destinationAirports(hazelcastInstance, airportsMap, movementsMap);
+                destinationAirports(hazelcastInstance, movementsMap);
                 break;
         }
     }
@@ -82,22 +85,22 @@ public class Client {
 
     }
 
-    private static void cabotagePercentage(HazelcastInstance hazelcastInstance, IMap<String, Airport> airportsMap,
-                                           IMap<Long, Movement> movementsMap) throws ExecutionException, InterruptedException {
-        final KeyValueSource<Long, Movement> source = KeyValueSource.fromMap(movementsMap);
+    private static void cabotagePercentage(HazelcastInstance hazelcastInstance, IMap<Long, Movement> movementsMap)
+                                                        throws ExecutionException, InterruptedException, IOException {
+        long quantity = 1;
         JobTracker jobTracker = hazelcastInstance.getJobTracker("query-2");
+        final KeyValueSource<Long, Movement> source = KeyValueSource.fromMap(movementsMap);
         Job<Long, Movement> job = jobTracker.newJob(source);
-        ICompletableFuture<Map<String, Long>> future = job
+        ICompletableFuture<List<AirportsMovementResult>> future = job
                 .mapper(new CabotageFlightsMapper())
                 .reducer(new AirportsMovementReducerFactory())
-                .submit();
-        Map<String, Long> result = future.get();
-
+                .submit(new CabotageFlightsCollator(quantity));
+        List<AirportsMovementResult> result = future.get();
+        ResultWriter.writeResult2("output2.csv", result);
     }
 
-    private static void destinationAirports(HazelcastInstance hazelcastInstance, IMap<String, Airport> airportsMap,
-                                            IMap<Long, Movement> movementsMap) throws ExecutionException,
-                                                                                InterruptedException, IOException {
+    private static void destinationAirports(HazelcastInstance hazelcastInstance, IMap<Long, Movement> movementsMap)
+                                                        throws ExecutionException, InterruptedException, IOException {
         String specifiedOaci = "SACO";//TODO replace with param
         long quantity = 1; //TODO replace with param
         JobTracker jobTracker = hazelcastInstance.getJobTracker("query-4");
@@ -109,7 +112,6 @@ public class Client {
                 .submit(new DestinationAirportCollator(quantity));
         List<AirportsMovementResult> result = future.get();
         ResultWriter.writeResult4("output4.csv", result);
-
     }
 
 }
