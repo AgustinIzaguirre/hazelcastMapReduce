@@ -9,7 +9,11 @@ import java.util.StringTokenizer;
 public class OaciAirportsMovementMapper implements Mapper<Long, Movement, String, Long>  {
     @Override
     public void map(Long id, Movement movement, Context<String, Long> context) {
-        context.emit(movement.getOrigin(), 1L);
-        context.emit(movement.getDestination(), 1L);
+        if(movement.getMovementType().equals("Despegue")) {
+            context.emit(movement.getOrigin(), 1L);
+        }
+        else {
+            context.emit(movement.getDestination(), 1L);
+        }
     }
 }
