@@ -4,6 +4,7 @@ import com.hazelcast.mapreduce.Reducer;
 import com.hazelcast.mapreduce.ReducerFactory;
 
 public class AirportsMovementReducerFactory implements ReducerFactory<String, Long, Long>{
+
     @Override
     public Reducer<Long, Long> newReducer(String key ) {
         return new AirportsMovementReducer();

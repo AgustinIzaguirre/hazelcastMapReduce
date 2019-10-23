@@ -40,8 +40,12 @@ public class CabotageFlightsCollator implements Collator<Map.Entry<String, Long>
             totalOthers.addAndGet(resultList.get((int)i).getMovements());
         }
 
-        List<AirportsMovementResult> completeList =  resultList.subList(0, (int)quantity);
-        completeList.add(new AirportsMovementResult("Otros", totalOthers.get()));
-        return completeList;
+
+        List<AirportsMovementResult> reducedList =  new ArrayList<>();
+        for(int i = 0; i < quantity && i < resultList.size(); i++) {
+            reducedList.add(resultList.get(i));
+        }
+        reducedList.add(new AirportsMovementResult("Otros", totalOthers.get()));
+        return reducedList;
     }
 }

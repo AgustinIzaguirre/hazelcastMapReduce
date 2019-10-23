@@ -47,7 +47,7 @@ public class Client {
         int queryNumber = 2;//TODO get from params
         solveQuery(queryNumber, hazelcastInstance, airportsMap, movementsMap);
         timeFileWriter.close();
-
+        System.out.println("Finished\n");
     }
 
     private static void loadData(IMap<String, Airport> airportsMap, IMap<Long, Movement> movementsMap) throws IOException {
@@ -105,9 +105,9 @@ public class Client {
 
     private static void cabotagePercentage(HazelcastInstance hazelcastInstance, IMap<Long, Movement> movementsMap)
                                                         throws ExecutionException, InterruptedException, IOException {
-        long quantity = 1;
-        JobTracker jobTracker = hazelcastInstance.getJobTracker("query-2");
+        long quantity = 2;
         final KeyValueSource<Long, Movement> source = KeyValueSource.fromMap(movementsMap);
+        JobTracker jobTracker = hazelcastInstance.getJobTracker("query-2");
         Job<Long, Movement> job = jobTracker.newJob(source);
         ICompletableFuture<List<AirportsMovementResult>> future = job
                 .mapper(new CabotageFlightsMapper())    //TODO add combiner maybe
@@ -174,8 +174,8 @@ public class Client {
 
     private static void destinationAirports(HazelcastInstance hazelcastInstance, IMap<Long, Movement> movementsMap)
                                                         throws ExecutionException, InterruptedException, IOException {
-        String specifiedOaci = "SACO";//TODO replace with param
-        long quantity = 1; //TODO replace with param
+        String specifiedOaci = "SAEZ";//TODO replace with param
+        long quantity = 5; //TODO replace with param
         JobTracker jobTracker = hazelcastInstance.getJobTracker("query-4");
         final KeyValueSource<Long, Movement> source = KeyValueSource.fromMap(movementsMap);
         Job<Long, Movement> job = jobTracker.newJob(source);

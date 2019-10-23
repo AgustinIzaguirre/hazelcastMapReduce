@@ -28,6 +28,10 @@ public class DestinationAirportCollator implements Collator<Map.Entry<String, Lo
             }
         });
 
-        return resultList.subList(0, (int)quantity);
+        List<AirportsMovementResult> reducedList = new ArrayList<>();
+        for(int i = 0; i < quantity && i < resultList.size(); i++) {
+            reducedList.add(resultList.get(i));
+        }
+        return reducedList;
     }
 }
