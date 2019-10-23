@@ -44,7 +44,7 @@ public class Client {
         timeFile = new FileWriter("time.txt");//TODO replace with param
         timeFileWriter = new BufferedWriter(timeFile);
         loadData(airportsMap, movementsMap);
-        int queryNumber = 3;//TODO get from params
+        int queryNumber = 2;//TODO get from params
         solveQuery(queryNumber, hazelcastInstance, airportsMap, movementsMap);
         timeFileWriter.close();
         System.out.println("Finished\n");
@@ -128,7 +128,7 @@ public class Client {
                 .reducer(new AirportsMovementReducerFactory())
                 .submit(new PairAirportCollator());
        List<AirportPairResult> resultList = future.get();
-       ResultWriter.writeResult3("output4.csv", resultList);
+       ResultWriter.writeResult3("output3.csv", resultList);
     }
 
     private static void pairAirportsWithSameThousandsWithSecondMapReduce(HazelcastInstance hazelcastInstance, IMap<Long,

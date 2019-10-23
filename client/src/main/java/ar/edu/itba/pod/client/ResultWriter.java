@@ -42,7 +42,10 @@ public class ResultWriter {
         result2Writer.write("Aerolinea;Porcentaje\n");
         resultList.forEach(element-> {
             try {
+//                double percentage = 100 * ((double)element.getMovements() / (double)total.get());  Rounded
                 double percentage = 100 * ((double)element.getMovements() / (double)total.get());
+                percentage = Math.floor(percentage * 100) / 100; // Truncated
+                System.out.println(element.getKey() + ": " + percentage + "\n");//TODO remove
                 String percentageFormated = new DecimalFormat("#.00").format(percentage) + "%";
                 percentageFormated = percentageFormated.charAt(0) == '.' ? 0 + percentageFormated : percentageFormated;
                 result2Writer.write(element.getKey() + ";" + percentageFormated + "\n");
