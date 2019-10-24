@@ -83,6 +83,7 @@ public class Client {
 
     private static ClientConfig loadClientConfig() throws IOException {
         final ClientConfig config = new XmlClientConfigBuilder("hazelcast.xml").build();//TODO update with ips
+        config.getNetworkConfig().addAddress(addresses);
         return config;
     }
 
