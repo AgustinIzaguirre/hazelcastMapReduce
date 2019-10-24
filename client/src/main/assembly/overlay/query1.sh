@@ -1,0 +1,7 @@
+#!/bin/bash
+if [ $# -ne 3 ]
+then
+	echo -e "Ussage:\n bash ./query1 -Daddresses='serverAddresses' -DinPath=inputDirectory -DoutPath=outputDirectory";
+else
+    java -DqueryNumbber=1 $1 $2 $3 -cp 'lib/jars/*' "ar.edu.itba.pod.client.Client"
+fi

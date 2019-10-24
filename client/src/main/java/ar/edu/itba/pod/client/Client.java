@@ -43,6 +43,8 @@ public class Client {
     private static String movementFilePath = ".";
     private static String resultFilePath;
     private static String timeFilePath;
+    private static long quantity;
+    private static String originOaci;
 
     public static void main(String[] args) throws ExecutionException, InterruptedException, IOException {
         queryNumber = 1;//TODO get from params
@@ -71,6 +73,12 @@ public class Client {
         if(queryNumber < 1 || queryNumber > 4) {
             //TODO throw exception
         }
+//        if(queryNumber == 2 || queryNumber == 4) {
+//            quantity = Long.parseLong(System.getProperty("n"));
+//            if(queryNumber == 2) {
+//                originOaci = System.getProperty("originOaci");
+//            }
+//        } //TODO use this on production
     }
 
     private static ClientConfig loadClientConfig() throws IOException {
