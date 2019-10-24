@@ -47,7 +47,7 @@ public class Client {
     private static String originOaci;
 
     public static void main(String[] args) throws ExecutionException, InterruptedException, IOException {
-        queryNumber = 1;//TODO get from params
+        queryNumber = 2;//TODO get from params
         loadProperties();
         ClientConfig config = loadClientConfig();
         final HazelcastInstance hazelcastInstance = HazelcastClient.newHazelcastClient(config);
@@ -83,7 +83,7 @@ public class Client {
 
     private static ClientConfig loadClientConfig() throws IOException {
         final ClientConfig config = new XmlClientConfigBuilder("hazelcast.xml").build();//TODO update with ips
-        config.getNetworkConfig().addAddress(addresses);
+//        config.getNetworkConfig().addAddress(addresses); //TODO add in production
         return config;
     }
 
