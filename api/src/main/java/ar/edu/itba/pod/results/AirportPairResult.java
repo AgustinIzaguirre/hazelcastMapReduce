@@ -3,7 +3,7 @@ package ar.edu.itba.pod.results;
 import java.io.Serializable;
 
 public class AirportPairResult implements Serializable{
-    //TODO add serializable UID
+    private static final long serialVersionUID = 1L;
     private long movements;
     private String first;
     private String second;

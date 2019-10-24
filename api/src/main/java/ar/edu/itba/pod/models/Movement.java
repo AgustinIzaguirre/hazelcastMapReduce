@@ -3,7 +3,7 @@ package ar.edu.itba.pod.models;
 import java.io.Serializable;
 
 public class Movement implements Serializable {
-    //TODO add serializable UID
+    private static final long serialVersionUID = 1L;
     private static long quantity = 0;
     private long id;
     private String movementType;

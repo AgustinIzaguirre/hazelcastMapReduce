@@ -3,7 +3,7 @@ package ar.edu.itba.pod.models;
 import java.io.Serializable;
 
 public class Airport implements Serializable {
-//TODO add serial UID
+    private static final long serialVersionUID = 1L;
     private String name;
     private String localCode; //TODO check if necessary
     private String province;
