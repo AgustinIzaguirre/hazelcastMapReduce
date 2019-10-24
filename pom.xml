@@ -6,7 +6,7 @@
   <artifactId>hazelcastMapReduce-parent</artifactId>
   <version>1.0-SNAPSHOT</version>
   <packaging>pom</packaging>
-  <name>hazelcastMapReduce-parent</name>
+  <name>tpe2-g12-parent</name>
   <modules>
     <module>api</module>
     <module>server</module>

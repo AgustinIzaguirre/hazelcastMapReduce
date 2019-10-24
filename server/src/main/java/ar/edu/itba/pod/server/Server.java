@@ -17,10 +17,5 @@ public class Server {
         logger.info("Example Server Starting ...");
         Config config = new XmlConfigBuilder("hazelcast.xml").build();
         HazelcastInstance h = Hazelcast.newHazelcastInstance(config);
-        ConcurrentMap<String, String> map = h.getMap("libros");
-        map.put("key1", "hola como va");
-        map.put("key2", "hola como");
-        map.put("key3", "hola que tal");
-        map.put("key4", "hola mundo");
     }
 }

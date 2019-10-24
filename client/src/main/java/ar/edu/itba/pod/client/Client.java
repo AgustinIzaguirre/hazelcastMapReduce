@@ -51,8 +51,8 @@ public class Client {
         loadProperties();
         ClientConfig config = loadClientConfig();
         final HazelcastInstance hazelcastInstance = HazelcastClient.newHazelcastClient(config);
-        final IMap<String, Airport> airportsMap = hazelcastInstance.getMap("aeropuertos");
-        final IMap<Long, Movement> movementsMap = hazelcastInstance.getMap("movimientos");
+        final IMap<String, Airport> airportsMap = hazelcastInstance.getMap("g12-aeropuertos");
+        final IMap<Long, Movement> movementsMap = hazelcastInstance.getMap("g12-movimientos");
         loadData(airportsMap, movementsMap);
         solveQuery(queryNumber, hazelcastInstance, airportsMap, movementsMap);
         timeFileWriter.close();
@@ -186,7 +186,7 @@ public class Client {
         Map<String, Long> resultMap = future.get();
 
         //second MapReduce
-        String mapName = "airportMovementMap";
+        String mapName = "g12-airportMovementMap";
         IMap<String, Long> airportMovementMap = loadMap(hazelcastInstance, resultMap, mapName);
         final KeyValueSource<String, Long> secondSource = KeyValueSource.fromMap(airportMovementMap);
         jobTracker = hazelcastInstance.getJobTracker("query-3");
