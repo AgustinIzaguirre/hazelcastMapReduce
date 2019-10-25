@@ -178,7 +178,7 @@ public class Client {
         JobTracker jobTracker = hazelcastInstance.getJobTracker("query-3");
         Job<Long, Movement> job = jobTracker.newJob(source);
         ICompletableFuture<List<AirportPairResult>> future = job
-                .mapper(new OaciAirportsMovementMapper())   //TODO add combiner maybe
+                .mapper(new OaciAirportsMovementMapper())  //TODO add combiner maybe
                 .reducer(new AirportsMovementReducerFactory())
                 .submit(new PairAirportCollator());
        List<AirportPairResult> resultList = future.get();
