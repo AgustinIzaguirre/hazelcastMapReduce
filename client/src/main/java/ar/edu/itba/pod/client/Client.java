@@ -27,6 +27,7 @@ import org.slf4j.LoggerFactory;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
@@ -83,7 +84,7 @@ public class Client {
 
     private static ClientConfig loadClientConfig() throws IOException {
         final ClientConfig config = new XmlClientConfigBuilder("hazelcast.xml").build();//TODO update with ips
-//        config.getNetworkConfig().addAddress(addresses); //TODO add in production
+//        config.getNetworkConfig().addAddresses(addresses); //TODO add in production and set to addd using list instead of array
         return config;
     }
 
