@@ -33,4 +33,44 @@ Run with CWD in root folder
 1. `tar -xvf hazelcastMapReduce-client-1.0-SNAPSHOT-bin.tar.gz`
 1. `cd hazelcastMapReduce-client-1.0-SNAPSHOT`
 1. `chmod u+x query*`
-1. `bash ./query1 parameters`
+1. `bash ./query1 -Daddresses='xx.xx.xx.xx:XXXX;yy.yy.yy.yy:YYYY' -DinPath=XX
+         -DoutPath=YY
+         
+ TODO specify parameters
+ 
+#### Query 2
+Run with CWD in root folder
+ 
+1. `cd client/target/`
+1. `tar -xvf hazelcastMapReduce-client-1.0-SNAPSHOT-bin.tar.gz`
+1. `cd hazelcastMapReduce-client-1.0-SNAPSHOT`
+1. `chmod u+x query*`
+1. `bash ./query2 -Daddresses='xx.xx.xx.xx:XXXX;yy.yy.yy.yy:YYYY' -DinPath=XX
+          -DoutPath=YY -Dn=N
+          
+ TODO specify parameters
+ 
+#### Query 3
+Run with CWD in root folder
+
+1. `cd client/target/`
+1. `tar -xvf hazelcastMapReduce-client-1.0-SNAPSHOT-bin.tar.gz`
+1. `cd hazelcastMapReduce-client-1.0-SNAPSHOT`
+1. `chmod u+x query*`
+1. `bash ./query3 -Daddresses='xx.xx.xx.xx:XXXX;yy.yy.yy.yy:YYYY' -DinPath=XX
+       -DoutPath=YY
+       
+TODO specify parameters
+
+
+#### Query 4
+Run with CWD in root folder
+
+1. `cd client/target/`
+1. `tar -xvf hazelcastMapReduce-client-1.0-SNAPSHOT-bin.tar.gz`
+1. `cd hazelcastMapReduce-client-1.0-SNAPSHOT`
+1. `chmod u+x query*`
+1. `bash ./query4 -Daddresses='xx.xx.xx.xx:XXXX;yy.yy.yy.yy:YYYY' -DinPath=XX
+       -DoutPath=YY -Doaci=CODE -Dn=N
+       
+TODO specify parameters
