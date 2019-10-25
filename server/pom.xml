@@ -28,6 +28,12 @@
       <type>pom</type>
       <scope>import</scope>
     </dependency>
+      <dependency>
+          <groupId>ar.edu.itba.pod</groupId>
+          <artifactId>hazelcastMapReduce-client</artifactId>
+          <version>1.0-SNAPSHOT</version>
+          <scope>test</scope>
+      </dependency>
   </dependencies>
   <build>
     <testSourceDirectory>src/test/java</testSourceDirectory>
