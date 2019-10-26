@@ -1,17 +1,12 @@
 package ar.edu.itba.pod.client;
 
-import ar.edu.itba.pod.collators.CabotageFlightsCollator;
-import ar.edu.itba.pod.collators.DestinationAirportCollator;
-import ar.edu.itba.pod.collators.OaciAirportsMovementCollator;
-import ar.edu.itba.pod.collators.PairAirportCollator;
+import ar.edu.itba.pod.collators.*;
 import ar.edu.itba.pod.combiners.MovementCombinerFactory;
-import ar.edu.itba.pod.mappers.CabotageFlightsMapper;
-import ar.edu.itba.pod.mappers.DestinationAirportMapper;
-import ar.edu.itba.pod.mappers.OaciAirportsMovementMapper;
-import ar.edu.itba.pod.mappers.OaciAirportsMovementWithInstanceAwareMapper;
+import ar.edu.itba.pod.mappers.*;
 import ar.edu.itba.pod.models.Airport;
 import ar.edu.itba.pod.models.Movement;
 import ar.edu.itba.pod.reducers.AirportsMovementReducerFactory;
+import ar.edu.itba.pod.reducers.SameThousandReducerFactory;
 import ar.edu.itba.pod.results.AirportPairResult;
 import ar.edu.itba.pod.results.AirportsMovementResult;
 import com.hazelcast.client.HazelcastClient;
@@ -232,14 +227,14 @@ public class Client {
 
     public static void pairAirportsWithSameThousandsWithSecondMapReduce(HazelcastInstance hazelcastInstance, IMap<Long,
                                                                             Movement> movementsMap, boolean useCombiner, String resultPath)
-                                                                            throws ExecutionException, InterruptedException {
+            throws ExecutionException, InterruptedException, IOException {
 
         //first MapReduce
         final KeyValueSource<Long, Movement> source = KeyValueSource.fromMap(movementsMap);
         JobTracker jobTracker = hazelcastInstance.getJobTracker("preCalculation");
         Job<Long, Movement> job = jobTracker.newJob(source);
         ICompletableFuture<Map<String, Long>> future = job
-                .mapper(new OaciAirportsMovementMapper())
+                .mapper(new OaciAirportsMovementMapper()) //TODO use variable useCombiner
                 .reducer(new AirportsMovementReducerFactory())
                 .submit();
         Map<String, Long> resultMap = future.get();
@@ -250,18 +245,16 @@ public class Client {
         final KeyValueSource<String, Long> secondSource = KeyValueSource.fromMap(airportMovementMap);
         jobTracker = hazelcastInstance.getJobTracker("query-3");
         Job<String, Long> secondJob = jobTracker.newJob(secondSource);
-//        ICompletableFuture<Map<String, Long>> future = job
-//                .mapper(new OaciAirportsMovementMapper())
-//                .reducer(new AirportsMovementReducerFactory())
-//                .submit();
-//        Map<String, Long> airportMovementMap = future.get();
-//
+        ICompletableFuture<List<AirportPairResult>> secondFuture = secondJob
+                .mapper(new SameThousandMapper())
+                .reducer(new SameThousandReducerFactory())
+                .submit(new PairSameThousandCollator());
+        List<AirportPairResult> resultList = secondFuture.get();
 
-//        ResultWriter.writeResult1("output1.csv", result, airportsMap);
-        //TODO
+        ResultWriter.writeResult3(resultPath, resultList);
+
         //clear map
         airportMovementMap.clear();
-
     }
 
     private static IMap<String,Long> loadMap(HazelcastInstance hazelcastInstance, Map<String, Long> resultMap, String mapName) {
