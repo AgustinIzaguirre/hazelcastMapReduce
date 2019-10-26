@@ -1,6 +1,5 @@
 package ar.edu.itba.pod.mappers;
 
-import ar.edu.itba.pod.models.Movement;
 import com.hazelcast.mapreduce.Context;
 import com.hazelcast.mapreduce.Mapper;
 
