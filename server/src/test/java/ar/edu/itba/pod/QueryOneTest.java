@@ -76,4 +76,35 @@ public class QueryOneTest {
         //Results
         Assert.assertTrue(ResultComparator.compareFiles(expectedPath, resultPath));
     }
+
+    @Test
+    public void emptyQueryResultWithAwareAndWithoutCombinerTest() throws IOException, ExecutionException, InterruptedException {
+        //Set up
+        final IMap<String, Airport> airportsMap = hazelcastInstance.getMap("g12-aeropuertos");
+        final IMap<Long, Movement> movementsMap = hazelcastInstance.getMap("g12-movimientos");
+        String resultPath = "src/test/data/results/answer.csv";
+        String expectedPath = "src/test/data/results/expectedResults/emptyQuery1Result.csv";
+
+        //Action
+        Client.airportsMovementQueryWithAware(hazelcastInstance, airportsMap, movementsMap, false, resultPath);
+
+        //Results
+        Assert.assertTrue(ResultComparator.compareFiles(expectedPath, resultPath));
+    }
+
+    @Test
+    public void emptyQueryResultWithAwareAndWithCombinerTest() throws IOException, ExecutionException, InterruptedException {
+        //Set up
+        final IMap<String, Airport> airportsMap = hazelcastInstance.getMap("g12-aeropuertos");
+        final IMap<Long, Movement> movementsMap = hazelcastInstance.getMap("g12-movimientos");
+        String resultPath = "src/test/data/results/answer.csv";
+        String expectedPath = "src/test/data/results/expectedResults/emptyQuery1Result.csv";
+
+        //Action
+        Client.airportsMovementQueryWithAware(hazelcastInstance, airportsMap, movementsMap, true, resultPath);
+
+        //Results
+        Assert.assertTrue(ResultComparator.compareFiles(expectedPath, resultPath));
+    }
+
 }

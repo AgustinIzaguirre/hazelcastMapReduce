@@ -9,13 +9,9 @@ import com.hazelcast.mapreduce.Mapper;
 
 import java.util.Map;
 
-public class OaciAirportsMovementWithInstanceAware implements HazelcastInstanceAware, Mapper<Long, Movement, String, Long> {
+public class OaciAirportsMovementWithInstanceAwareMapper implements HazelcastInstanceAware, Mapper<Long, Movement, String, Long> {
     private transient HazelcastInstance hazelcastInstance;
-    private String origin;
 
-    public OaciAirportsMovementWithInstanceAware(String origin) {
-        this.origin = origin;
-    }
 
     @Override
     public void setHazelcastInstance(HazelcastInstance hazelcastInstance) {

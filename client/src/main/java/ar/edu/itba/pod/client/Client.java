@@ -8,6 +8,7 @@ import ar.edu.itba.pod.combiners.MovementCombinerFactory;
 import ar.edu.itba.pod.mappers.CabotageFlightsMapper;
 import ar.edu.itba.pod.mappers.DestinationAirportMapper;
 import ar.edu.itba.pod.mappers.OaciAirportsMovementMapper;
+import ar.edu.itba.pod.mappers.OaciAirportsMovementWithInstanceAwareMapper;
 import ar.edu.itba.pod.models.Airport;
 import ar.edu.itba.pod.models.Movement;
 import ar.edu.itba.pod.reducers.AirportsMovementReducerFactory;
@@ -114,14 +115,14 @@ public class Client {
                 airportsMovementQuery(hazelcastInstance, airportsMap, movementsMap, useCombiner, resultFilePath);
                 break;
             case 2:
-                cabotagePercentage(hazelcastInstance, movementsMap);
+                cabotagePercentage(hazelcastInstance, movementsMap, false, resultFilePath);
                 break;
             case 3:
-                pairAirportsWithSameThousands(hazelcastInstance, movementsMap);
+                pairAirportsWithSameThousands(hazelcastInstance, movementsMap, false, resultFilePath);
 //                pairAirportsWithSameThousandsWithSecondMapReduce(hazelcastInstance, movementsMap);
                 break;
             case 4:
-                destinationAirports(hazelcastInstance, movementsMap);
+                destinationAirports(hazelcastInstance, movementsMap, false, resultFilePath);
                 break;
         }
         ResultWriter.writeTime(timeFileWriter, "Fin del trabajo map/reduce");
@@ -160,15 +161,17 @@ public class Client {
     public static void airportsMovementQueryWithAware(HazelcastInstance hazelcastInstance, IMap<String, Airport> airportsMap,
                                              IMap<Long, Movement> movementsMap, boolean useCombiner, String resultPath)
             throws ExecutionException, InterruptedException, IOException {
+
         final KeyValueSource<Long, Movement> source = KeyValueSource.fromMap(movementsMap);
-
+        OaciAirportsMovementWithInstanceAwareMapper mapper = new OaciAirportsMovementWithInstanceAwareMapper();
+        mapper.setHazelcastInstance(hazelcastInstance);
         JobTracker jobTracker = hazelcastInstance.getJobTracker("query-1");
-
         Job<Long, Movement> job = jobTracker.newJob(source);
         List<AirportsMovementResult> result = null;
+
         if(useCombiner) {
             ICompletableFuture<List<AirportsMovementResult>> future = job
-                    .mapper(new OaciAirportsMovementMapper())
+                    .mapper(mapper)
                     .combiner(new MovementCombinerFactory())
                     .reducer(new AirportsMovementReducerFactory())
                     .submit(new OaciAirportsMovementCollator());
@@ -176,7 +179,7 @@ public class Client {
         }
         else {
             ICompletableFuture<List<AirportsMovementResult>> future = job
-                    .mapper(new OaciAirportsMovementMapper())
+                    .mapper(mapper)
                     .reducer(new AirportsMovementReducerFactory())
                     .submit(new OaciAirportsMovementCollator());
             result = future.get();
@@ -184,7 +187,8 @@ public class Client {
         ResultWriter.writeResult1WithAware(resultPath, result, airportsMap);
     }
 
-    private static void cabotagePercentage(HazelcastInstance hazelcastInstance, IMap<Long, Movement> movementsMap)
+    public static void cabotagePercentage(HazelcastInstance hazelcastInstance, IMap<Long, Movement> movementsMap,
+                                          boolean useCombiner, String resultPath)
                                                         throws ExecutionException, InterruptedException, IOException {
         long quantity = 5;
         final KeyValueSource<Long, Movement> source = KeyValueSource.fromMap(movementsMap);
@@ -195,11 +199,12 @@ public class Client {
                 .reducer(new AirportsMovementReducerFactory())
                 .submit(new CabotageFlightsCollator(quantity));
         List<AirportsMovementResult> result = future.get();
-        ResultWriter.writeResult2(resultFilePath, result);
+        ResultWriter.writeResult2(resultPath, result);
     }
 
-    private static void pairAirportsWithSameThousands(HazelcastInstance hazelcastInstance,
-                                                      IMap<Long, Movement> movementsMap)
+    public static void pairAirportsWithSameThousands(HazelcastInstance hazelcastInstance,
+                                                      IMap<Long, Movement> movementsMap,
+                                                     boolean useCombiner, String resultPath)
                                             throws ExecutionException, InterruptedException, IOException {
         final KeyValueSource<Long, Movement> source = KeyValueSource.fromMap(movementsMap);
         JobTracker jobTracker = hazelcastInstance.getJobTracker("query-3");
@@ -209,11 +214,11 @@ public class Client {
                 .reducer(new AirportsMovementReducerFactory())
                 .submit(new PairAirportCollator());
        List<AirportPairResult> resultList = future.get();
-       ResultWriter.writeResult3(resultFilePath, resultList);
+       ResultWriter.writeResult3(resultPath, resultList);
     }
 
-    private static void pairAirportsWithSameThousandsWithSecondMapReduce(HazelcastInstance hazelcastInstance, IMap<Long,
-                                                                            Movement> movementsMap)
+    public static void pairAirportsWithSameThousandsWithSecondMapReduce(HazelcastInstance hazelcastInstance, IMap<Long,
+                                                                            Movement> movementsMap, boolean useCombiner, String resultPath)
                                                                             throws ExecutionException, InterruptedException {
 
         //first MapReduce
@@ -253,7 +258,8 @@ public class Client {
     }
 
 
-    private static void destinationAirports(HazelcastInstance hazelcastInstance, IMap<Long, Movement> movementsMap)
+    public static void destinationAirports(HazelcastInstance hazelcastInstance, IMap<Long, Movement> movementsMap,
+                                                                            boolean useCombiner, String resultPath)
                                                         throws ExecutionException, InterruptedException, IOException {
         String specifiedOaci = "SAEZ";//TODO replace with param
         long quantity = 5; //TODO replace with param
@@ -265,7 +271,7 @@ public class Client {
                 .reducer(new AirportsMovementReducerFactory())
                 .submit(new DestinationAirportCollator(quantity));
         List<AirportsMovementResult> result = future.get();
-        ResultWriter.writeResult4(resultFilePath, result);
+        ResultWriter.writeResult4(resultPath, result);
     }
 
 }
