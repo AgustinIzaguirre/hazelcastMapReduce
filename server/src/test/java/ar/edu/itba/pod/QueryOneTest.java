@@ -2,6 +2,7 @@ package ar.edu.itba.pod;
 
 import ar.edu.itba.pod.Util.ResultComparator;
 import ar.edu.itba.pod.client.Client;
+import ar.edu.itba.pod.client.FileLoader;
 import ar.edu.itba.pod.client.ResultWriter;
 import ar.edu.itba.pod.collators.OaciAirportsMovementCollator;
 import ar.edu.itba.pod.mappers.OaciAirportsMovementMapper;
@@ -45,6 +46,13 @@ public class QueryOneTest {
     private static HazelcastInstance createClient() throws IOException {
         ClientConfig config = new XmlClientConfigBuilder("src/test/data/hazelcast.xml").build();
         return HazelcastClient.newHazelcastClient(config);
+    }
+
+    private static void loadMaps(IMap<String, Airport> airportsMap,
+                                              IMap<Long, Movement> movementIMap) throws IOException {
+        FileLoader fileLoader = new FileLoader();
+        fileLoader.loadAirports("src/test/data/aeropuertos.csv", airportsMap);
+        fileLoader.loadMovements("src/test/data/movimientos.csv", movementIMap);
     }
 
     @Test
@@ -106,5 +114,7 @@ public class QueryOneTest {
         //Results
         Assert.assertTrue(ResultComparator.compareFiles(expectedPath, resultPath));
     }
+
+
 
 }
