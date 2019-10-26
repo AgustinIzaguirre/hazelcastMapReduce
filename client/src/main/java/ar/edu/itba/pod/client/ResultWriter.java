@@ -43,7 +43,7 @@ public class ResultWriter {
         result1Writer.write("OACI;Denominación;Movimientos\n");
         resultList.forEach(element-> {
             Airport airport = airportsMap.get(element.getKey());
-            String denomination = airport.getName() == null ? airport.getName() : "";
+            String denomination = airport.getName() != null ? airport.getName() : "";
             try {
                 result1Writer.write(element.getKey() + ";" + denomination + ";" + element.getMovements() + "\n");
             } catch (IOException e) {
@@ -59,7 +59,7 @@ public class ResultWriter {
         BufferedWriter result2Writer = new BufferedWriter(result2File);
         AtomicLong total = new AtomicLong();
         resultList.forEach(element -> total.addAndGet(element.getMovements()));
-        result2Writer.write("Aerolinea;Porcentaje\n");
+        result2Writer.write("Aerolínea;Porcentaje\n");
         resultList.forEach(element-> {
             try {
 //                double percentage = 100 * ((double)element.getMovements() / (double)total.get());  Rounded

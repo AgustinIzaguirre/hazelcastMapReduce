@@ -194,11 +194,24 @@ public class Client {
         final KeyValueSource<Long, Movement> source = KeyValueSource.fromMap(movementsMap);
         JobTracker jobTracker = hazelcastInstance.getJobTracker("query-2");
         Job<Long, Movement> job = jobTracker.newJob(source);
-        ICompletableFuture<List<AirportsMovementResult>> future = job
-                .mapper(new CabotageFlightsMapper())    //TODO add combiner maybe
-                .reducer(new AirportsMovementReducerFactory())
-                .submit(new CabotageFlightsCollator(quantity));
-        List<AirportsMovementResult> result = future.get();
+        List<AirportsMovementResult> result = null;
+
+        if(useCombiner) {
+            ICompletableFuture<List<AirportsMovementResult>> future = job
+                    .mapper(new CabotageFlightsMapper())
+                    .combiner(new MovementCombinerFactory())
+                    .reducer(new AirportsMovementReducerFactory())
+                    .submit(new CabotageFlightsCollator(quantity));
+                    result = future.get();
+        }
+        else {
+            ICompletableFuture<List<AirportsMovementResult>> future = job
+                    .mapper(new CabotageFlightsMapper())
+                    .reducer(new AirportsMovementReducerFactory())
+                    .submit(new CabotageFlightsCollator(quantity));
+                    result = future.get();
+        }
+
         ResultWriter.writeResult2(resultPath, result);
     }
 
@@ -265,12 +278,24 @@ public class Client {
         long quantity = 5; //TODO replace with param
         JobTracker jobTracker = hazelcastInstance.getJobTracker("query-4");
         final KeyValueSource<Long, Movement> source = KeyValueSource.fromMap(movementsMap);
+        List<AirportsMovementResult> result = null;
         Job<Long, Movement> job = jobTracker.newJob(source);
-        ICompletableFuture<List<AirportsMovementResult>> future = job
-                .mapper(new DestinationAirportMapper(specifiedOaci))    //TODO add combiner maybe
-                .reducer(new AirportsMovementReducerFactory())
-                .submit(new DestinationAirportCollator(quantity));
-        List<AirportsMovementResult> result = future.get();
+        if(useCombiner) {
+            ICompletableFuture<List<AirportsMovementResult>> future = job
+                    .mapper(new DestinationAirportMapper(specifiedOaci))
+                    .combiner(new MovementCombinerFactory())
+                    .reducer(new AirportsMovementReducerFactory())
+                    .submit(new DestinationAirportCollator(quantity));
+            result = future.get();
+        }
+        else {
+            ICompletableFuture<List<AirportsMovementResult>> future = job
+                    .mapper(new DestinationAirportMapper(specifiedOaci))
+                    .reducer(new AirportsMovementReducerFactory())
+                    .submit(new DestinationAirportCollator(quantity));
+            result = future.get();
+
+        }
         ResultWriter.writeResult4(resultPath, result);
     }
 
