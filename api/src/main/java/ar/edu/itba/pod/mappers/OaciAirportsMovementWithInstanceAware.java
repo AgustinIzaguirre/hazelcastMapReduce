@@ -9,11 +9,11 @@ import com.hazelcast.mapreduce.Mapper;
 
 import java.util.Map;
 
-public class DestinationAirportMapperWithInstanceAware implements HazelcastInstanceAware, Mapper<Long, Movement, String, Long> {
+public class OaciAirportsMovementWithInstanceAware implements HazelcastInstanceAware, Mapper<Long, Movement, String, Long> {
     private transient HazelcastInstance hazelcastInstance;
     private String origin;
 
-    public DestinationAirportMapperWithInstanceAware(String origin) {
+    public OaciAirportsMovementWithInstanceAware(String origin) {
         this.origin = origin;
     }
 
@@ -24,10 +24,15 @@ public class DestinationAirportMapperWithInstanceAware implements HazelcastInsta
 
     @Override
     public void map(Long id, Movement movement, Context<String, Long> context) {
-         Map<String, Airport > airportsMap = hazelcastInstance.getMap("g12-aeropuertos");
+        Map<String, Airport > airportsMap = hazelcastInstance.getMap("g12-aeropuertos");
 
-        if(movement.getOrigin().equals(origin) && movement.getMovementType().equals("Despegue")) {//TODO maybe on file loader add everything lowercase and compare always lowercase
-            if(airportsMap.get(movement.getDestination()) != null) { //TODO check if it was destination or origin
+        if(movement.getMovementType().equals("Despegue")) {
+            if(airportsMap.get(movement.getOrigin()) != null) {
+                context.emit(movement.getOrigin(), 1L);
+            }
+        }
+        else {
+            if(airportsMap.get(movement.getDestination()) != null) {
                 context.emit(movement.getDestination(), 1L);
             }
         }

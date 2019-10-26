@@ -36,6 +36,24 @@ public class ResultWriter {
         result1Writer.close();
     }
 
+    public static void writeResult1WithAware(String outputFilePath, List<AirportsMovementResult> resultList,
+                                    IMap<String, Airport> airportsMap) throws IOException {
+        FileWriter result1File = new FileWriter(outputFilePath);
+        BufferedWriter result1Writer = new BufferedWriter(result1File);
+        result1Writer.write("OACI;Denominación;Movimientos\n");
+        resultList.forEach(element-> {
+            Airport airport = airportsMap.get(element.getKey());
+            String denomination = airport.getName() == null ? airport.getName() : "";
+            try {
+                result1Writer.write(element.getKey() + ";" + denomination + ";" + element.getMovements() + "\n");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
+
+        result1Writer.close();
+    }
+
     public static void writeResult2(String outputFilePath, List<AirportsMovementResult> resultList) throws IOException {
         FileWriter result2File = new FileWriter(outputFilePath);
         BufferedWriter result2Writer = new BufferedWriter(result2File);

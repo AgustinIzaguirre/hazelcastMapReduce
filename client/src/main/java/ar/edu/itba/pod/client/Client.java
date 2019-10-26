@@ -157,6 +157,33 @@ public class Client {
         ResultWriter.writeResult1(resultPath, result, airportsMap);
     }
 
+    public static void airportsMovementQueryWithAware(HazelcastInstance hazelcastInstance, IMap<String, Airport> airportsMap,
+                                             IMap<Long, Movement> movementsMap, boolean useCombiner, String resultPath)
+            throws ExecutionException, InterruptedException, IOException {
+        final KeyValueSource<Long, Movement> source = KeyValueSource.fromMap(movementsMap);
+
+        JobTracker jobTracker = hazelcastInstance.getJobTracker("query-1");
+
+        Job<Long, Movement> job = jobTracker.newJob(source);
+        List<AirportsMovementResult> result = null;
+        if(useCombiner) {
+            ICompletableFuture<List<AirportsMovementResult>> future = job
+                    .mapper(new OaciAirportsMovementMapper())
+                    .combiner(new MovementCombinerFactory())
+                    .reducer(new AirportsMovementReducerFactory())
+                    .submit(new OaciAirportsMovementCollator());
+            result = future.get();
+        }
+        else {
+            ICompletableFuture<List<AirportsMovementResult>> future = job
+                    .mapper(new OaciAirportsMovementMapper())
+                    .reducer(new AirportsMovementReducerFactory())
+                    .submit(new OaciAirportsMovementCollator());
+            result = future.get();
+        }
+        ResultWriter.writeResult1WithAware(resultPath, result, airportsMap);
+    }
+
     private static void cabotagePercentage(HazelcastInstance hazelcastInstance, IMap<Long, Movement> movementsMap)
                                                         throws ExecutionException, InterruptedException, IOException {
         long quantity = 5;
