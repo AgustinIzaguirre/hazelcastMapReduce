@@ -1,6 +1,7 @@
 package ar.edu.itba.pod;
 
 import ar.edu.itba.pod.Util.ResultComparator;
+import ar.edu.itba.pod.client.Client;
 import ar.edu.itba.pod.client.ResultWriter;
 import ar.edu.itba.pod.collators.OaciAirportsMovementCollator;
 import ar.edu.itba.pod.mappers.OaciAirportsMovementMapper;
@@ -47,23 +48,30 @@ public class QueryOneTest {
     }
 
     @Test
-    public void emptyQueryResultTest() throws IOException, ExecutionException, InterruptedException {
+    public void emptyQueryResultWithoutCombinerTest() throws IOException, ExecutionException, InterruptedException {
         //Set up
         final IMap<String, Airport> airportsMap = hazelcastInstance.getMap("g12-aeropuertos");
         final IMap<Long, Movement> movementsMap = hazelcastInstance.getMap("g12-movimientos");
-        final KeyValueSource<Long, Movement> source = KeyValueSource.fromMap(movementsMap);
-        JobTracker jobTracker = hazelcastInstance.getJobTracker("query-1");
-        Job<Long, Movement> job = jobTracker.newJob(source);
         String resultPath = "src/test/data/results/answer.csv";
         String expectedPath = "src/test/data/results/expectedResults/emptyQuery1Result.csv";
 
         //Action
-        ICompletableFuture<List<AirportsMovementResult>> future = job
-                .mapper(new OaciAirportsMovementMapper())   //TODO add combiner maybe
-                .reducer(new AirportsMovementReducerFactory())
-                .submit(new OaciAirportsMovementCollator());
-        List<AirportsMovementResult> result = future.get();
-        ResultWriter.writeResult1("src/test/data/results/answer.csv", result, airportsMap);
+        Client.airportsMovementQuery(hazelcastInstance, airportsMap, movementsMap, false, resultPath);
+
+        //Results
+        Assert.assertTrue(ResultComparator.compareFiles(expectedPath, resultPath));
+    }
+
+    @Test
+    public void emptyQueryResultWithCombinerTest() throws IOException, ExecutionException, InterruptedException {
+        //Set up
+        final IMap<String, Airport> airportsMap = hazelcastInstance.getMap("g12-aeropuertos");
+        final IMap<Long, Movement> movementsMap = hazelcastInstance.getMap("g12-movimientos");
+        String resultPath = "src/test/data/results/answer.csv";
+        String expectedPath = "src/test/data/results/expectedResults/emptyQuery1Result.csv";
+
+        //Action
+        Client.airportsMovementQuery(hazelcastInstance, airportsMap, movementsMap, true, resultPath);
 
         //Results
         Assert.assertTrue(ResultComparator.compareFiles(expectedPath, resultPath));

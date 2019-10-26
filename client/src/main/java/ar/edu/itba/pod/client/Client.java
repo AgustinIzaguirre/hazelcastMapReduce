@@ -111,7 +111,7 @@ public class Client {
         boolean useCombiner = true;//TODO generalize
         switch (queryNumber) {
             case 1:
-                airportsMovementQuery(hazelcastInstance, airportsMap, movementsMap, useCombiner);
+                airportsMovementQuery(hazelcastInstance, airportsMap, movementsMap, useCombiner, resultFilePath);
                 break;
             case 2:
                 cabotagePercentage(hazelcastInstance, movementsMap);
@@ -130,8 +130,8 @@ public class Client {
 
 
 
-    private static void airportsMovementQuery(HazelcastInstance hazelcastInstance, IMap<String, Airport> airportsMap,
-                                              IMap<Long, Movement> movementsMap, boolean useCombiner)
+    public static void airportsMovementQuery(HazelcastInstance hazelcastInstance, IMap<String, Airport> airportsMap,
+                                              IMap<Long, Movement> movementsMap, boolean useCombiner, String resultPath)
                                                         throws ExecutionException, InterruptedException, IOException {
         final KeyValueSource<Long, Movement> source = KeyValueSource.fromMap(movementsMap);
 
@@ -154,7 +154,7 @@ public class Client {
                     .submit(new OaciAirportsMovementCollator());
                     result = future.get();
         }
-        ResultWriter.writeResult1(resultFilePath, result, airportsMap);
+        ResultWriter.writeResult1(resultPath, result, airportsMap);
     }
 
     private static void cabotagePercentage(HazelcastInstance hazelcastInstance, IMap<Long, Movement> movementsMap)
