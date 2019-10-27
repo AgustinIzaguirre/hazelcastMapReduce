@@ -34,10 +34,10 @@ public class QueryThreeTest {
         return HazelcastClient.newHazelcastClient(config); //TODO maybbe singleton so as not to reload for every class
     }
 
-    private static void loadMaps(IMap<Long, Movement> movementIMap, String movementPath) throws IOException {
-        movementIMap.clear();
+    private static void loadMaps(IMap<Long, Movement> movementMap, String movementPath) throws IOException {
+        movementMap.clear();
         FileLoader fileLoader = new FileLoader();
-        fileLoader.loadMovements(movementPath, movementIMap);
+        fileLoader.loadMovements(movementPath, movementMap);
     }
 
     @Test
@@ -84,20 +84,21 @@ public class QueryThreeTest {
         //Results
         Assert.assertTrue(ResultComparator.compareFiles(expectedPath, resultPath));
     }
-//
-//    @Test
-//    public void emptyQueryResultWithSecondMapReduceWithCombinerTest() throws IOException, ExecutionException, InterruptedException {
-//        //Set up
-//        final IMap<Long, Movement> movementsMap = hazelcastInstance.getMap("g12-movimientos");
-//        String resultPath = "src/test/data/results/answer.csv";
-//        String expectedPath = "src/test/data/results/expectedResults/emptyQuery3Result.csv";
-//
-//        //Action
-//        //TODO
-//
-//        //Results
-//        Assert.assertTrue(ResultComparator.compareFiles(expectedPath, resultPath));
-//    }
+
+    @Test
+    public void emptyQueryResultWithSecondMapReduceWithCombinerTest() throws IOException, ExecutionException, InterruptedException {
+        //Set up
+        final IMap<Long, Movement> movementsMap = hazelcastInstance.getMap("g12-movimientos");
+        movementsMap.clear();
+        String resultPath = "src/test/data/results/answer.csv";
+        String expectedPath = "src/test/data/results/expectedResults/emptyQuery3Result.csv";
+
+        //Action
+        Client.pairAirportsWithSameThousandsWithSecondMapReduce(hazelcastInstance, movementsMap, true, resultPath);
+
+        //Results
+        Assert.assertTrue(ResultComparator.compareFiles(expectedPath, resultPath));
+    }
 
     @Test
     public void fullQueryResultWithoutCombinerTest() throws IOException, ExecutionException, InterruptedException {
@@ -145,22 +146,22 @@ public class QueryThreeTest {
         //Results
         Assert.assertTrue(ResultComparator.compareFiles(expectedPath, resultPath));
     }
-//
-//    @Test
-//    public void fullQueryResultWithSecondMapReduceWithCombinerTest() throws IOException, ExecutionException, InterruptedException {
-//        //Set up
-//        final IMap<Long, Movement> movementsMap = hazelcastInstance.getMap("g12-movimientos");
-//        String movementPath = "src/test/data/movimientos.csv";
-//        loadMaps(movementsMap, movementPath);
-//        String resultPath = "src/test/data/results/answer.csv";
-//        String expectedPath = "src/test/data/results/expectedResults/query3.csv";
-//
-//        //Action
-//        //TODO
-//
-//        //Results
-//        Assert.assertTrue(ResultComparator.compareFiles(expectedPath, resultPath));
-//    }
+
+    @Test
+    public void fullQueryResultWithSecondMapReduceWithCombinerTest() throws IOException, ExecutionException, InterruptedException {
+        //Set up
+        final IMap<Long, Movement> movementsMap = hazelcastInstance.getMap("g12-movimientos");
+        String movementPath = "src/test/data/movimientos.csv";
+        loadMaps(movementsMap, movementPath);
+        String resultPath = "src/test/data/results/answer.csv";
+        String expectedPath = "src/test/data/results/expectedResults/query3.csv";
+
+        //Action
+        Client.pairAirportsWithSameThousandsWithSecondMapReduce(hazelcastInstance, movementsMap, true, resultPath);
+
+        //Results
+        Assert.assertTrue(ResultComparator.compareFiles(expectedPath, resultPath));
+    }
 
     //TODO add one adhoc case and test with the 4 possible combinations
 

@@ -2,6 +2,7 @@ package ar.edu.itba.pod.client;
 
 import ar.edu.itba.pod.collators.*;
 import ar.edu.itba.pod.combiners.MovementCombinerFactory;
+import ar.edu.itba.pod.combiners.SameThousandCombinerFactory;
 import ar.edu.itba.pod.mappers.*;
 import ar.edu.itba.pod.models.Airport;
 import ar.edu.itba.pod.models.Movement;
@@ -226,12 +227,24 @@ public class Client {
                                             throws ExecutionException, InterruptedException, IOException {
         final KeyValueSource<Long, Movement> source = KeyValueSource.fromMap(movementsMap);
         JobTracker jobTracker = hazelcastInstance.getJobTracker("query-3");
+        List<AirportPairResult> resultList = null;
         Job<Long, Movement> job = jobTracker.newJob(source);
-        ICompletableFuture<List<AirportPairResult>> future = job
-                .mapper(new OaciAirportsMovementMapper())  //TODO add combiner maybe
-                .reducer(new AirportsMovementReducerFactory())
-                .submit(new PairAirportCollator());
-       List<AirportPairResult> resultList = future.get();
+
+        if(useCombiner) {
+            ICompletableFuture<List<AirportPairResult>> future = job
+                    .mapper(new OaciAirportsMovementMapper())
+                    .combiner(new MovementCombinerFactory())
+                    .reducer(new AirportsMovementReducerFactory())
+                    .submit(new PairAirportCollator());
+            resultList = future.get();
+        }
+        else {
+            ICompletableFuture<List<AirportPairResult>> future = job
+                    .mapper(new OaciAirportsMovementMapper())
+                    .reducer(new AirportsMovementReducerFactory())
+                    .submit(new PairAirportCollator());
+            resultList = future.get();
+        }
        ResultWriter.writeResult3(resultPath, resultList);
     }
 
@@ -242,24 +255,48 @@ public class Client {
         //first MapReduce
         final KeyValueSource<Long, Movement> source = KeyValueSource.fromMap(movementsMap);
         JobTracker jobTracker = hazelcastInstance.getJobTracker("preCalculation");
+        Map<String, Long> resultMap = null;
         Job<Long, Movement> job = jobTracker.newJob(source);
-        ICompletableFuture<Map<String, Long>> future = job
-                .mapper(new OaciAirportsMovementMapper()) //TODO use variable useCombiner
-                .reducer(new AirportsMovementReducerFactory())
-                .submit();
-        Map<String, Long> resultMap = future.get();
+
+        if(useCombiner) {
+            ICompletableFuture<Map<String, Long>> future = job
+                    .mapper(new OaciAirportsMovementMapper())
+                    .combiner(new MovementCombinerFactory())
+                    .reducer(new AirportsMovementReducerFactory())
+                    .submit();
+            resultMap = future.get();
+        }
+        else {
+            ICompletableFuture<Map<String, Long>> future = job
+                    .mapper(new OaciAirportsMovementMapper()) //TODO use variable useCombiner
+                    .reducer(new AirportsMovementReducerFactory())
+                    .submit();
+            resultMap = future.get();
+        }
 
         //second MapReduce
         String mapName = "g12-airportMovementMap";
         IMap<String, Long> airportMovementMap = loadMap(hazelcastInstance, resultMap, mapName);
         final KeyValueSource<String, Long> secondSource = KeyValueSource.fromMap(airportMovementMap);
         jobTracker = hazelcastInstance.getJobTracker("query-3");
+        List<AirportPairResult> resultList = null;
         Job<String, Long> secondJob = jobTracker.newJob(secondSource);
-        ICompletableFuture<List<AirportPairResult>> secondFuture = secondJob
-                .mapper(new SameThousandMapper())
-                .reducer(new SameThousandReducerFactory())
-                .submit(new PairSameThousandCollator());
-        List<AirportPairResult> resultList = secondFuture.get();
+
+        if(useCombiner) {
+            ICompletableFuture<List<AirportPairResult>> secondFuture = secondJob
+                    .mapper(new SameThousandMapper())
+                    .combiner(new SameThousandCombinerFactory())
+                    .reducer(new SameThousandReducerFactory())
+                    .submit(new PairSameThousandCollator());
+            resultList = secondFuture.get();
+        }
+        else {
+            ICompletableFuture<List<AirportPairResult>> secondFuture = secondJob
+                    .mapper(new SameThousandMapper())
+                    .reducer(new SameThousandReducerFactory())
+                    .submit(new PairSameThousandCollator());
+            resultList = secondFuture.get();
+        }
 
         ResultWriter.writeResult3(resultPath, resultList);
 
