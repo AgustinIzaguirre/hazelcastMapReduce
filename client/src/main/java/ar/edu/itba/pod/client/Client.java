@@ -95,7 +95,9 @@ public class Client {
         //load maps
         FileLoader fileLoader = new FileLoader();
         ResultWriter.writeTime(timeFileWriter, "Inicio de la lectura del archivo");
-        fileLoader.loadAirports("aeropuertos.csv", airportsMap);
+        if(queryNumber == 1) {
+            fileLoader.loadAirports("aeropuertos.csv", airportsMap);
+        }
         fileLoader.loadMovements("movimientos.csv", movementsMap);
         ResultWriter.writeTime(timeFileWriter, "Fin de lectura del archivo");
     }
