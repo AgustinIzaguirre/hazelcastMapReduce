@@ -69,29 +69,34 @@ public class Client {
         airportsFilePath = inputDirectoryPath + "/aeropuertos.csv";
         movementFilePath = inputDirectoryPath + "/movimientos.csv";
 //        resultFilePath = outputDirectoryPath + "/query" + queryNumber + ".csv"; // TODO use this on production
-
         resultFilePath = outputDirectoryPath + "/query" + queryNumber + "_v2.csv";
         timeFilePath = outputDirectoryPath + "/query" + queryNumber + ".txt";
 
         if(queryNumber < 1 || queryNumber > 4) {
             //TODO throw exception
         }
+
 //        if(queryNumber == 2 || queryNumber == 4) {
 //            quantity = Long.parseLong(System.getProperty("n"));
+//
 //            if(queryNumber == 2) {
 //                originOaci = System.getProperty("originOaci");
 //            }
 //        } //TODO use this on production
+//        validateProperties();//TODO implement
     }
 
     private static ClientConfig loadClientConfig() throws IOException {
         final ClientConfig config = new XmlClientConfigBuilder("hazelcast.xml").build();//TODO update with ips
         List<String> newAddresses = new LinkedList<>();
+
+        //start of test
 //        config.getNetworkConfig().addAddress("10.6.0.2:5701;10.6.0.4:5701".split(";"));
 //        newAddresses.add("10.6.0.1:5701");
 //        System.out.println(config.getNetworkConfig().getAddresses());
 //        config.getNetworkConfig().setAddresses(newAddresses);
 //        System.out.println(config.getNetworkConfig().getAddresses()); //TODO diference between addaddresses and setaddresses
+      //end of test
 
 //        config.getNetworkConfig().addAddresses(addresses); //TODO add in production and set to addd using list instead of array
         return config;
@@ -126,13 +131,16 @@ public class Client {
             case 1:
                 airportsMovementQuery(hazelcastInstance, airportsMap, movementsMap, useCombiner, resultFilePath);
                 break;
+
             case 2:
                 cabotagePercentage(hazelcastInstance, movementsMap, quantity,false, resultFilePath);
                 break;
+
             case 3:
                 pairAirportsWithSameThousands(hazelcastInstance, movementsMap, false, resultFilePath);
 //                pairAirportsWithSameThousandsWithSecondMapReduce(hazelcastInstance, movementsMap,false, resultFilePath);
                 break;
+
             case 4:
                 destinationAirports(hazelcastInstance, movementsMap, originOaci, quantity, false, resultFilePath);
                 break;
