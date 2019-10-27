@@ -182,6 +182,76 @@ public class QueryOneTest {
         Assert.assertTrue(ResultComparator.compareFiles(expectedPath, resultPath));
     }
 
-    //TODO add one adhoc case and test with the 4 possible combinations
+    @Test
+    public void firstAirportNotInAirportsWithoutCombinerTest() throws IOException, ExecutionException, InterruptedException {
+        //Set up
+        final IMap<String, Airport> airportsMap = hazelcastInstance.getMap("g12-aeropuertos");
+        final IMap<Long, Movement> movementsMap = hazelcastInstance.getMap("g12-movimientos");
+        String airportPath = "src/test/data/aeropuertosQuery1.csv";
+        String movementPath = "src/test/data/movimientosQuery1.csv";
+        loadMaps(airportsMap, movementsMap, airportPath, movementPath);
+        String resultPath = "src/test/data/results/answer.csv";
+        String expectedPath = "src/test/data/results/expectedResults/test1Query1Result.csv";
+
+        //Action
+        Client.airportsMovementQuery(hazelcastInstance, airportsMap, movementsMap, false, resultPath);
+
+        //Results
+        Assert.assertTrue(ResultComparator.compareFiles(expectedPath, resultPath));
+    }
+
+    @Test
+    public void firstAirportNotInAirportsWithCombinerTest() throws IOException, ExecutionException, InterruptedException {
+        //Set up
+        final IMap<String, Airport> airportsMap = hazelcastInstance.getMap("g12-aeropuertos");
+        final IMap<Long, Movement> movementsMap = hazelcastInstance.getMap("g12-movimientos");
+        String airportPath = "src/test/data/aeropuertosQuery1.csv";
+        String movementPath = "src/test/data/movimientosQuery1.csv";
+        loadMaps(airportsMap, movementsMap, airportPath, movementPath);
+        String resultPath = "src/test/data/results/answer.csv";
+        String expectedPath = "src/test/data/results/expectedResults/test1Query1Result.csv";
+
+        //Action
+        Client.airportsMovementQuery(hazelcastInstance, airportsMap, movementsMap, true, resultPath);
+
+        //Results
+        Assert.assertTrue(ResultComparator.compareFiles(expectedPath, resultPath));
+    }
+
+    @Test
+    public void firstAirportNotInAirportsWithAwareAndWithoutCombinerTest() throws IOException, ExecutionException, InterruptedException {
+        //Set up
+        final IMap<String, Airport> airportsMap = hazelcastInstance.getMap("g12-aeropuertos");
+        final IMap<Long, Movement> movementsMap = hazelcastInstance.getMap("g12-movimientos");
+        String airportPath = "src/test/data/aeropuertosQuery1.csv";
+        String movementPath = "src/test/data/movimientosQuery1.csv";
+        loadMaps(airportsMap, movementsMap, airportPath, movementPath);
+        String resultPath = "src/test/data/results/answer.csv";
+        String expectedPath = "src/test/data/results/expectedResults/test1Query1Result.csv";
+
+        //Action
+        Client.airportsMovementQueryWithAware(hazelcastInstance, airportsMap, movementsMap, false, resultPath);
+
+        //Results
+        Assert.assertTrue(ResultComparator.compareFiles(expectedPath, resultPath));
+    }
+
+    @Test
+    public void firstAirportNotInAirportsWithAwareAndWithtCombinerTest() throws IOException, ExecutionException, InterruptedException {
+        //Set up
+        final IMap<String, Airport> airportsMap = hazelcastInstance.getMap("g12-aeropuertos");
+        final IMap<Long, Movement> movementsMap = hazelcastInstance.getMap("g12-movimientos");
+        String airportPath = "src/test/data/aeropuertosQuery1.csv";
+        String movementPath = "src/test/data/movimientosQuery1.csv";
+        loadMaps(airportsMap, movementsMap, airportPath, movementPath);
+        String resultPath = "src/test/data/results/answer.csv";
+        String expectedPath = "src/test/data/results/expectedResults/test1Query1Result.csv";
+
+        //Action
+        Client.airportsMovementQueryWithAware(hazelcastInstance, airportsMap, movementsMap, true, resultPath);
+
+        //Results
+        Assert.assertTrue(ResultComparator.compareFiles(expectedPath, resultPath));
+    }
 
 }
