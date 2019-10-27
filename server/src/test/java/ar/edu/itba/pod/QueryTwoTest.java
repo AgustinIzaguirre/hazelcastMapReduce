@@ -17,7 +17,7 @@ import org.junit.Test;
 import java.io.IOException;
 import java.util.concurrent.ExecutionException;
 
-public class QueryTwoClass {
+public class QueryTwoTest {
 
     private static HazelcastInstance hazelcastInstance;
 
@@ -102,6 +102,36 @@ public class QueryTwoClass {
         Assert.assertTrue(ResultComparator.compareFiles(expectedPath, resultPath));
     }
 
-    //TODO add one adhoc case and test with the 2 possible combinations
+    @Test
+    public void lessResultsThanAskedForWithoutCombinerTest() throws IOException, ExecutionException, InterruptedException {
+        //Set up
+        final IMap<Long, Movement> movementsMap = hazelcastInstance.getMap("g12-movimientos");
+        String movementPath = "src/test/data/movimientosQuery2.csv";
+        loadMaps(movementsMap, movementPath);
+        String resultPath = "src/test/data/results/answer.csv";
+        String expectedPath = "src/test/data/results/expectedResults/test1Query2Result.csv";
+
+        //Action
+        Client.cabotagePercentage(hazelcastInstance, movementsMap, false, resultPath);
+
+        //Results
+        Assert.assertTrue(ResultComparator.compareFiles(expectedPath, resultPath));
+    }
+
+    @Test
+    public void lessResultsThanAskedForWithCombinerTest() throws IOException, ExecutionException, InterruptedException {
+        //Set up
+        final IMap<Long, Movement> movementsMap = hazelcastInstance.getMap("g12-movimientos");
+        String movementPath = "src/test/data/movimientosQuery2.csv";
+        loadMaps(movementsMap, movementPath);
+        String resultPath = "src/test/data/results/answer.csv";
+        String expectedPath = "src/test/data/results/expectedResults/test1Query2Result.csv";
+
+        //Action
+        Client.cabotagePercentage(hazelcastInstance, movementsMap, true, resultPath);
+
+        //Results
+        Assert.assertTrue(ResultComparator.compareFiles(expectedPath, resultPath));
+    }
 
 }

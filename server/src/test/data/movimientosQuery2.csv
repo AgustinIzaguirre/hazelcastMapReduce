@@ -1,0 +1,4 @@
+Fecha;Hora;Clase de Vuelo;Clasificaci?n Vuelo;Tipo de Movimiento;Origen OACI;Destino OACI;Aerolinea Nombre;Aeronave
+11/08/2015;7;Regular;Cabotaje;Aterrizaje;SABE;SARE;Aerolíneas Argentinas;BOEING B-737
+13/07/2018;15;Regular;Cabotaje;Aterrizaje;SARP;SABE;Aerolíneas Argentinas;BOEING B-737
+30/06/2015;19;Regular;Cabotaje;Despegue;SABE;SAAP;Austral Líneas Aéreas;EMBRAER E-190
