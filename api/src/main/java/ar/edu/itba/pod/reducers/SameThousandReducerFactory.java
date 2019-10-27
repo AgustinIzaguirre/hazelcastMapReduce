@@ -7,6 +7,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class SameThousandReducerFactory implements ReducerFactory<Long, List<String>, List<String>> {
+    private static final long serialVersionUID = 1L;
 
     @Override
     public Reducer<List<String>, List<String>> newReducer(Long key){

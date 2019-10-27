@@ -10,6 +10,7 @@ import com.hazelcast.mapreduce.Mapper;
 import java.util.Map;
 
 public class OaciAirportsMovementWithInstanceAwareMapper implements HazelcastInstanceAware, Mapper<Long, Movement, String, Long> {
+    private static final long serialVersionUID = 1L;
     private transient HazelcastInstance hazelcastInstance;
 
 

@@ -7,7 +7,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class SameThousandMapper implements Mapper<String, Long, Long, List<String>> {
-
+    private static final long serialVersionUID = 1L;
 
     @Override
     public void map(String code, Long movements, Context<Long, List<String>> context) {

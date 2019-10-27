@@ -9,7 +9,6 @@ import java.io.*;
 public class FileLoader {
     //airports indexes
     private int airportNameIndex;
-    private int airportLocalCodeIndex;
     private int airportProvinceIndex;
     private int airportOaciCodeIndex;
 
@@ -43,10 +42,8 @@ public class FileLoader {
     private void loadAirportIndexes(String[] airportData) {
         for(int i = 0; i < airportData.length; i++) {
             String currentType = airportData[i].toUpperCase(); //TODO maybe compare with the csv actual name
-            if(currentType.equals("LOCAL")) {
-                airportLocalCodeIndex = i;
-            }
-            else if(currentType.equals("OACI")) {
+
+            if(currentType.equals("OACI")) {
                 airportOaciCodeIndex = i;
             }
             else if(currentType.equals("DENOMINACION")) {
@@ -59,7 +56,7 @@ public class FileLoader {
     }
 
     private Airport loadAirport(String[] airportData) {
-        String name = null, localCode = null, province = null, oaciCode = null;
+        String name = null, province = null, oaciCode = null;
         if(airportData[airportOaciCodeIndex].length() > 0) {
             oaciCode = airportData[airportOaciCodeIndex];
         }
@@ -69,14 +66,11 @@ public class FileLoader {
         if(airportData[airportNameIndex].length() > 0) {
             name = airportData[airportNameIndex];
         }
-        if(airportData[airportLocalCodeIndex].length() > 0) {
-            localCode = airportData[airportLocalCodeIndex];
-        }
         if(airportData[airportProvinceIndex].length() > 0) {
             province = airportData[airportProvinceIndex];
         }
 
-        return new Airport(name, localCode, province, oaciCode);
+        return new Airport(name, province, oaciCode);
     }
 
     public void loadMovements(String path, IMap<Long, Movement> map) throws IOException {

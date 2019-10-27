@@ -7,6 +7,8 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class SameThousandCombinerFactory implements CombinerFactory<Long, List<String>, List<String>> {
+    private static final long serialVersionUID = 1L;
+
     @Override
     public Combiner<List<String>, List<String>> newCombiner(Long key) {
         return new MovementCombiner();

@@ -10,6 +10,7 @@ public class AirportsMovementReducerFactory implements ReducerFactory<String, Lo
         return new AirportsMovementReducer();
     }
     private class AirportsMovementReducer extends Reducer<Long, Long> {
+        private static final long serialVersionUID = 1L;
         private volatile long sum;
 
         @Override

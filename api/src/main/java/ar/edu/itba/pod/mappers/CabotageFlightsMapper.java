@@ -5,6 +5,7 @@ import com.hazelcast.mapreduce.Context;
 import com.hazelcast.mapreduce.Mapper;
 
 public class CabotageFlightsMapper implements Mapper<Long, Movement, String, Long> {
+    private static final long serialVersionUID = 1L;
 
     @Override
     public void map(Long id, Movement movement, Context<String, Long> context) {

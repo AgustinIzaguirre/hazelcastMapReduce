@@ -4,6 +4,8 @@ import com.hazelcast.mapreduce.Combiner;
 import com.hazelcast.mapreduce.CombinerFactory;
 
 public class MovementCombinerFactory  implements CombinerFactory<String, Long, Long> {
+    private static final long serialVersionUID = 1L;
+
     @Override
     public Combiner<Long, Long> newCombiner( String key ) {
         return new MovementCombiner();
