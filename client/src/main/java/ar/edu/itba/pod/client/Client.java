@@ -82,6 +82,13 @@ public class Client {
 
     private static ClientConfig loadClientConfig() throws IOException {
         final ClientConfig config = new XmlClientConfigBuilder("hazelcast.xml").build();//TODO update with ips
+        List<String> newAddresses = new LinkedList<>();
+//        config.getNetworkConfig().addAddress("10.6.0.2:5701;10.6.0.4:5701".split(";"));
+//        newAddresses.add("10.6.0.1:5701");
+//        System.out.println(config.getNetworkConfig().getAddresses());
+//        config.getNetworkConfig().setAddresses(newAddresses);
+//        System.out.println(config.getNetworkConfig().getAddresses()); //TODO diference between addaddresses and setaddresses
+
 //        config.getNetworkConfig().addAddresses(addresses); //TODO add in production and set to addd using list instead of array
         return config;
     }
