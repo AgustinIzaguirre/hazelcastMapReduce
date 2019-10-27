@@ -24,11 +24,13 @@ public class OaciAirportsMovementWithInstanceAwareMapper implements HazelcastIns
         Map<String, Airport > airportsMap = hazelcastInstance.getMap("g12-aeropuertos");
 
         if(movement.getMovementType().equals("Despegue")) {
+
             if(airportsMap.get(movement.getOrigin()) != null) {
                 context.emit(movement.getOrigin(), 1L);
             }
         }
         else {
+
             if(airportsMap.get(movement.getDestination()) != null) {
                 context.emit(movement.getDestination(), 1L);
             }

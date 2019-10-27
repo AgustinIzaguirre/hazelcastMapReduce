@@ -9,10 +9,13 @@ public class ResultComparator {
         BufferedReader file1Reader = new BufferedReader(file1);
         BufferedReader file2Reader = new BufferedReader(file2);
         boolean finished = false, result = true;
+
         while(!finished) {
             String line1 = file1Reader.readLine();
             String line2 = file2Reader.readLine();
+
             if(line1 != null && line2 != null) {
+
                 if(!line1.equals(line2)) {
                     finished = true;
                     result = false;
@@ -20,6 +23,7 @@ public class ResultComparator {
             }
             else {
                 finished = true;
+
                 if((line1 != null && line2 == null) || (line2 != null && line1 == null)) {
                     result = false;
                 }
@@ -32,7 +36,6 @@ public class ResultComparator {
     public static void main(String[] args) throws IOException {
         String path1 = "server/src/test/data/resultComparator/test.csv";
         String path2 = "server/src/test/data/resultComparator/test.csv";
-
         System.out.println(compareFiles(path1, path2));
     }
 }

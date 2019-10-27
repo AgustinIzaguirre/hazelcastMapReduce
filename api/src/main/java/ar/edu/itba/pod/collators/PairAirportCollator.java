@@ -15,18 +15,23 @@ public class PairAirportCollator implements Collator<Map.Entry<String, Long>, Li
         List<AirportPairResult> airportPairList = new ArrayList<>();
         airportsOfThousands.forEach((key,value) -> {
             List<AirportPairResult> pairResults = getAllPair(key, value);
+
             if(pairResults.size() > 0) {
                 airportPairList.addAll(pairResults); //TODO improve with java 8
             }
         });
+
         airportPairList.sort((pair1, pair2) -> {
+
             if(pair1.getMovements() != pair2.getMovements()) {
                return (int)(pair2.getMovements() - pair1.getMovements());
             }
             else {
+
                 if(pair1.getFirst().compareTo(pair2.getFirst()) == 0) {
                     return pair1.getSecond().compareTo(pair2.getSecond());
                 }
+
                 return pair1.getFirst().compareTo(pair2.getFirst());
             }
         });
@@ -39,15 +44,19 @@ public class PairAirportCollator implements Collator<Map.Entry<String, Long>, Li
     private Map<Long,List<String>> getAirportOfThousands(Iterable<Map.Entry<String, Long>> values) {
         Map<Long, List<String>> airportsOfThousands = new HashMap<>();
         values.forEach(element -> {
+
             if(element.getValue() >= 1000) {
                 long thousands = (element.getValue() / 1000) * 1000;
+
                 if(airportsOfThousands.get(thousands) == null) {
                     airportsOfThousands.put(thousands, new LinkedList<>()); //TODO improve with Java 8
                 }
+
                 List<String> airports = airportsOfThousands.get(thousands);
                 airports.add(element.getKey());
             }
         });
+
         return airportsOfThousands;
     }
 

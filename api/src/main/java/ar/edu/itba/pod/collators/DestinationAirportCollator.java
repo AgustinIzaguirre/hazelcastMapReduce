@@ -20,6 +20,7 @@ public class DestinationAirportCollator implements Collator<Map.Entry<String, Lo
         List<AirportsMovementResult> resultList = new ArrayList<>();
         values.forEach((entry)-> resultList.add(new AirportsMovementResult(entry.getKey(), entry.getValue())));
         resultList.sort((r1,r2)-> {
+
             if(r1.getMovements() != r2.getMovements()) {
                 return r2.getMovements().compareTo(r1.getMovements());
             }
@@ -29,9 +30,11 @@ public class DestinationAirportCollator implements Collator<Map.Entry<String, Lo
         });
 
         List<AirportsMovementResult> reducedList = new ArrayList<>();
+
         for(int i = 0; i < quantity && i < resultList.size(); i++) {
             reducedList.add(resultList.get(i));
         }
+
         return reducedList;
     }
 }

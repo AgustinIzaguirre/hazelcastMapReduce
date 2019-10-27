@@ -28,5 +28,4 @@ public class MovementCombinerFactory  implements CombinerFactory<String, Long, L
             sum = 0;
         }
     }
-
 }

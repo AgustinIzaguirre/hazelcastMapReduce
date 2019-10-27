@@ -33,7 +33,6 @@ public class AirportPairResult implements Serializable{
         }
 
         AirportPairResult otherAirportPair = (AirportPairResult)other;
-
         return first.equals(otherAirportPair.getFirst()) &&
                 second.equals(otherAirportPair.getSecond()) &&
                 movements == otherAirportPair.getMovements(); //if other 2 are equal this should be equal also

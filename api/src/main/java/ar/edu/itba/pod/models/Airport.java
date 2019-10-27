@@ -25,5 +25,4 @@ public class Airport implements Serializable {
     public String getOaciCode() {
         return oaciCode;
     }
-
 }

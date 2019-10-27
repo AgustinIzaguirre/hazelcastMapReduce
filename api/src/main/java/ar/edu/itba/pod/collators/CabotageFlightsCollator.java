@@ -20,6 +20,7 @@ public class CabotageFlightsCollator implements Collator<Map.Entry<String, Long>
         List<AirportsMovementResult> resultList = new ArrayList<>();
         AtomicLong totalOthers = new AtomicLong();
         values.forEach((entry)-> {
+
             if(entry.getKey().equals("Otros")) {
                 totalOthers.addAndGet(entry.getValue());
             }
@@ -27,7 +28,9 @@ public class CabotageFlightsCollator implements Collator<Map.Entry<String, Long>
                 resultList.add(new AirportsMovementResult(entry.getKey(), entry.getValue()));
             }
         });
+
         resultList.sort((r1,r2)-> {
+
             if(r1.getMovements() != r2.getMovements()) {
                 return r2.getMovements().compareTo(r1.getMovements());
             }
@@ -40,14 +43,16 @@ public class CabotageFlightsCollator implements Collator<Map.Entry<String, Long>
             totalOthers.addAndGet(resultList.get((int)i).getMovements());
         }
 
-
         List<AirportsMovementResult> reducedList =  new ArrayList<>();
+
         for(int i = 0; i < quantity && i < resultList.size(); i++) {
             reducedList.add(resultList.get(i));
         }
+
         if(reducedList.size() > 0 ) {
             reducedList.add(new AirportsMovementResult("Otros", totalOthers.get()));
         }// TODO check what happens if totalOthers.get() == 0
+
         return reducedList;
     }
 }

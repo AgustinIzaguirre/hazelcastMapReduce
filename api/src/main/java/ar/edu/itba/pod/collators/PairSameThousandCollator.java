@@ -21,12 +21,16 @@ public class PairSameThousandCollator implements Collator<Map.Entry<Long, List<S
             }
         });
         airportPairList.sort((pair1, pair2) -> {
+
             if (pair1.getMovements() != pair2.getMovements()) {
                 return (int) (pair2.getMovements() - pair1.getMovements());
-            } else {
+            }
+            else {
+
                 if (pair1.getFirst().compareTo(pair2.getFirst()) == 0) {
                     return pair1.getSecond().compareTo(pair2.getSecond());
                 }
+
                 return pair1.getFirst().compareTo(pair2.getFirst());
             }
         });
@@ -42,6 +46,7 @@ public class PairSameThousandCollator implements Collator<Map.Entry<Long, List<S
         }
 
         for (int i = 0; i < airports.size() - 1; i++) {
+
             for (int j = i + 1; j < airports.size(); j++) {
                 pairResultList.add(new AirportPairResult(thousands, airports.get(i), airports.get(j)));
             }

@@ -26,6 +26,7 @@ public class FileLoader {
         String line = airportReader.readLine();
         String airportData[] = line.split(";");
         loadAirportIndexes(airportData);
+
         do {
             line = airportReader.readLine();
             if(line != null) {
@@ -36,6 +37,7 @@ public class FileLoader {
                 }
             }
         } while(line != null);
+
         airportReader.close();
     }
 
@@ -57,15 +59,18 @@ public class FileLoader {
 
     private Airport loadAirport(String[] airportData) {
         String name = null, province = null, oaciCode = null;
+
         if(airportData[airportOaciCodeIndex].length() > 0) {
             oaciCode = airportData[airportOaciCodeIndex];
         }
         else {
             return null;
         }
+
         if(airportData[airportNameIndex].length() > 0) {
             name = airportData[airportNameIndex];
         }
+
         if(airportData[airportProvinceIndex].length() > 0) {
             province = airportData[airportProvinceIndex];
         }
@@ -79,16 +84,20 @@ public class FileLoader {
         String line = movementReader.readLine();
         String movementData[] = line.split(";");
         loadMovementIndexes(movementData);
+
         do {
             line = movementReader.readLine();
+
             if(line != null) {
                 movementData = line.split(";");
                 Movement currentMovement = loadMovement(movementData);
+
                 if(currentMovement != null) { //TODO ADD optional
                     map.put(currentMovement.getId(), currentMovement);
                 }
             }
         } while(line != null);
+
         movementReader.close();
     }
 
@@ -97,6 +106,7 @@ public class FileLoader {
     private void loadMovementIndexes(String[] movementData) {
         for(int i = 0; i < movementData.length; i++) {
             String currentType = movementData[i];
+
             if(currentType.equals("Origen OACI")) {
                 originIndex = i;
             }
@@ -120,30 +130,36 @@ public class FileLoader {
     private Movement loadMovement(String[] movementData) {
         String origin = null, destination = null, airline = null;
         String flightClass = null, clasification = null, type = null;
+
         if(movementData[originIndex].length() > 0) {
             origin = movementData[originIndex];
         }
+
         if(movementData[destinationIndex].length() > 0) {
             destination = movementData[destinationIndex];
         }
+
         if(movementData[airlineIndex].length() > 0) {
             airline = movementData[airlineIndex];
         }
+
         if(movementData[flightClassIndex].length() > 0) {
             flightClass = movementData[flightClassIndex];
         }
+
         if(movementData[clasificationIndex].length() > 0) {
             clasification = movementData[clasificationIndex];
         }
+
         if(movementData[movementTypeIndex].length() > 0) {
             type = movementData[movementTypeIndex];
         }
+
         if(origin == null || destination == null) {
             return null;
         }
 
         return new Movement(type, flightClass, origin, destination, airline, clasification);
     }
-
 }
 

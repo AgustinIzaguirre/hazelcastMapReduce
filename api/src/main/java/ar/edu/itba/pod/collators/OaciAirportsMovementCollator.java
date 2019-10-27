@@ -14,6 +14,7 @@ public class OaciAirportsMovementCollator implements Collator<Map.Entry<String, 
         List<AirportsMovementResult> resultList = new ArrayList<>();
         values.forEach((entry)-> resultList.add(new AirportsMovementResult(entry.getKey(), entry.getValue())));
         resultList.sort((r1,r2)->{
+
             if(r1.getMovements() != r2.getMovements()) {
                 return r2.getMovements().compareTo(r1.getMovements());
             }
@@ -21,6 +22,7 @@ public class OaciAirportsMovementCollator implements Collator<Map.Entry<String, 
                 return r1.getKey().compareTo(r2.getKey());
             }
         });
+
         return resultList;
     }
 }

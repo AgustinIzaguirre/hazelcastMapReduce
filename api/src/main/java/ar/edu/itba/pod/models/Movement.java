@@ -52,7 +52,4 @@ public class Movement implements Serializable {
     public long getId() {
         return id;
     }
-
-    //TODO make hashcode
-    //TODO after asking if there can be repeated flights on movimientos.csv
 }

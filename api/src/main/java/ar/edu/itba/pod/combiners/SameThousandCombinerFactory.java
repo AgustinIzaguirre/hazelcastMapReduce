@@ -11,13 +11,13 @@ public class SameThousandCombinerFactory implements CombinerFactory<Long, List<S
 
     @Override
     public Combiner<List<String>, List<String>> newCombiner(Long key) {
-        return new MovementCombiner();
+        return new SameThousandCombiner();
     }
 
-    private class MovementCombiner extends Combiner<List<String>, List<String>> {
+    private class SameThousandCombiner extends Combiner<List<String>, List<String>> {
         private List<String> codeList;
 
-        public MovementCombiner() {
+        public SameThousandCombiner() {
             codeList = new LinkedList<>();
         }
 

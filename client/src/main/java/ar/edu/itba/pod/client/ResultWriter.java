@@ -23,6 +23,7 @@ public class ResultWriter {
         result1Writer.write("OACI;Denominación;Movimientos\n");
         resultList.forEach(element-> {
             Optional<Airport> airport = Optional.ofNullable(airportsMap.get(element.getKey()));
+
             if(airport.isPresent()) { //TODO mejorar con java 8
                 Airport currentAirport = airport.get();
                 String denomination = currentAirport.getName() != null ? currentAirport.getName() : "";
@@ -112,5 +113,4 @@ public class ResultWriter {
         Timestamp currentTime = new Timestamp(time);
         outputFileWriter.write(currentTime + "\tINFO Client -" + "\t" + message + "\n");
     }
-
 }
