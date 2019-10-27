@@ -6,14 +6,14 @@ import com.hazelcast.mapreduce.ReducerFactory;
 import java.util.LinkedList;
 import java.util.List;
 
-public class SameThousandReducerFactory implements ReducerFactory<Long, String, List<String>> {
+public class SameThousandReducerFactory implements ReducerFactory<Long, List<String>, List<String>> {
 
     @Override
-    public Reducer<String, List<String>> newReducer(Long key){
+    public Reducer<List<String>, List<String>> newReducer(Long key){
             return new SameThousandReducer();
             }
 
-    private class SameThousandReducer extends Reducer<String, List<String>> {
+    private class SameThousandReducer extends Reducer<List<String>, List<String>> {
         private volatile List<String> codeList;
 
         @Override
@@ -22,8 +22,8 @@ public class SameThousandReducerFactory implements ReducerFactory<Long, String, 
         }
 
         @Override
-        public void reduce(String value) {
-            codeList.add(value);
+        public void reduce(List<String> values) {
+            values.forEach(value -> codeList.add(value));
         }
 
         @Override
