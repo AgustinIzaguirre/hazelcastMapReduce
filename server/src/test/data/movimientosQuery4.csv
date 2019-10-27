@@ -1,0 +1,5 @@
+Fecha;Hora;Clase de Vuelo;Clasificaci?n Vuelo;Tipo de Movimiento;Origen OACI;Destino OACI;Aerolinea Nombre;Aeronave
+30/06/2015;19;Regular;Cabotaje;Despegue;SACA;SAAP;Austral Líneas Aéreas;EMBRAER E-190
+26/01/2018;13;Regular;Internacional;Despegue;SACA;SCEL;LATAM;AIRBUS A-320
+19/04/2019;6;Regular;Cabotaje;Despegue;SACA;SASA;Flybondi;BOEING B-737
+15/02/2014;10;Regular;Cabotaje;Despegue;SACA;SAME;Aerolíneas Argentinas;BOEING B-737

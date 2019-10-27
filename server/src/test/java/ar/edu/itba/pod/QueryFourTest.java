@@ -102,21 +102,37 @@ public class QueryFourTest {
         Assert.assertTrue(ResultComparator.compareFiles(expectedPath, resultPath));
     }
 
-//    @Test
-//    public void allWithSameQuantityWithoutCombinerTest() throws IOException, ExecutionException, InterruptedException {
-//        //Set up
-//        final IMap<Long, Movement> movementsMap = hazelcastInstance.getMap("g12-movimientos");
-//        String movementPath = "src/test/data/movimientos.csv";
-//        loadMaps(movementsMap, movementPath);
-//        String resultPath = "src/test/data/results/answer.csv";
-//        String expectedPath = "src/test/data/results/expectedResults/query4.csv";
-//
-//        //Action
-//        Client.destinationAirports(hazelcastInstance, movementsMap, false, resultPath);
-//
-//        //Results
-//        Assert.assertTrue(ResultComparator.compareFiles(expectedPath, resultPath));
-//    }
+    @Test
+    public void allWithSameQuantityWithoutCombinerTest() throws IOException, ExecutionException, InterruptedException {
+        //Set up
+        final IMap<Long, Movement> movementsMap = hazelcastInstance.getMap("g12-movimientos");
+        String movementPath = "src/test/data/movimientosQuery4.csv";
+        loadMaps(movementsMap, movementPath);
+        String resultPath = "src/test/data/results/answer.csv";
+        String expectedPath = "src/test/data/results/expectedResults/test1Query4Result.csv";
+
+        //Action
+        Client.destinationAirports(hazelcastInstance, movementsMap, "SACA", 2,false, resultPath);
+
+        //Results
+        Assert.assertTrue(ResultComparator.compareFiles(expectedPath, resultPath));
+    }
+
+    @Test
+    public void allWithSameQuantityWithCombinerTest() throws IOException, ExecutionException, InterruptedException {
+        //Set up
+        final IMap<Long, Movement> movementsMap = hazelcastInstance.getMap("g12-movimientos");
+        String movementPath = "src/test/data/movimientosQuery4.csv";
+        loadMaps(movementsMap, movementPath);
+        String resultPath = "src/test/data/results/answer.csv";
+        String expectedPath = "src/test/data/results/expectedResults/test1Query4Result.csv";
+
+        //Action
+        Client.destinationAirports(hazelcastInstance, movementsMap, "SACA", 2,true, resultPath);
+
+        //Results
+        Assert.assertTrue(ResultComparator.compareFiles(expectedPath, resultPath));
+    }
     //TODO add one adhoc case and test with the 2 possible combinations
 
 
