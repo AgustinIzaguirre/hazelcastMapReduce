@@ -133,7 +133,5 @@ public class QueryFourTest {
         //Results
         Assert.assertTrue(ResultComparator.compareFiles(expectedPath, resultPath));
     }
-    //TODO add one adhoc case and test with the 2 possible combinations
-
 
 }
