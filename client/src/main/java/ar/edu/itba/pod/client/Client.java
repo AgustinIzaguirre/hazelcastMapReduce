@@ -63,7 +63,7 @@ public class Client {
 
     private static void loadProperties() {
 //        queryNumber = Integer.parseInt(System.getProperty("queryNumber"));  // TODO use this on production
-//        addresses= System.getProperty("addresses").split(";");  // TODO use this on production
+//        addresses= System.getProperty("addresses").split(";");  // TODO use this on production check if null
 //        inputDirectoryPath = System.getProperty("inPath");    // TODO use this on production
 //        outputDirectoryPath = System.getProperty("outPath");  // TODO use this on production
         airportsFilePath = inputDirectoryPath + "/aeropuertos.csv";
@@ -88,7 +88,7 @@ public class Client {
 
     private static ClientConfig loadClientConfig() throws IOException {
         final ClientConfig config = new XmlClientConfigBuilder("hazelcast.xml").build();//TODO update with ips
-        List<String> newAddresses = new LinkedList<>();
+        List<String> newAddresses = loadAddresses();
 
         //start of test
 //        config.getNetworkConfig().addAddress("10.6.0.2:5701;10.6.0.4:5701".split(";"));
@@ -98,8 +98,18 @@ public class Client {
 //        System.out.println(config.getNetworkConfig().getAddresses()); //TODO diference between addaddresses and setaddresses
       //end of test
 
-//        config.getNetworkConfig().addAddresses(addresses); //TODO add in production and set to addd using list instead of array
+//        config.getNetworkConfig().setAddresses(newAddresses); //TODO add in production and set to addd using list instead of array
         return config;
+    }
+
+    private static List<String> loadAddresses() {
+        List<String> newAddresses = new LinkedList<>();
+
+        for(int i = 0; i < addresses.length; i++) {
+            newAddresses.add(addresses[i]);
+        }
+
+        return newAddresses;
     }
 
     private static void loadData(IMap<String, Airport> airportsMap, IMap<Long, Movement> movementsMap) throws IOException {
