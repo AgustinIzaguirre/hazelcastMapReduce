@@ -116,19 +116,23 @@ public class Client {
                                     throws ExecutionException, InterruptedException, IOException {
         ResultWriter.writeTime(timeFileWriter, "Inicio del trabajo map/reduce");
         boolean useCombiner = true;//TODO generalize
+        long quantity; // TODO parametrice
         switch (queryNumber) {
             case 1:
                 airportsMovementQuery(hazelcastInstance, airportsMap, movementsMap, useCombiner, resultFilePath);
                 break;
             case 2:
-                cabotagePercentage(hazelcastInstance, movementsMap, false, resultFilePath);
+                 quantity = 5; //TODO parametrice by function
+                cabotagePercentage(hazelcastInstance, movementsMap, quantity,false, resultFilePath);
                 break;
             case 3:
                 pairAirportsWithSameThousands(hazelcastInstance, movementsMap, false, resultFilePath);
 //                pairAirportsWithSameThousandsWithSecondMapReduce(hazelcastInstance, movementsMap);
                 break;
             case 4:
-                destinationAirports(hazelcastInstance, movementsMap, false, resultFilePath);
+                quantity = 5; //TODO replace with param
+                String originOaci = "SAEZ";//TODO replace with param
+                destinationAirports(hazelcastInstance, movementsMap, originOaci, quantity, false, resultFilePath);
                 break;
         }
         ResultWriter.writeTime(timeFileWriter, "Fin del trabajo map/reduce");
@@ -194,9 +198,8 @@ public class Client {
     }
 
     public static void cabotagePercentage(HazelcastInstance hazelcastInstance, IMap<Long, Movement> movementsMap,
-                                          boolean useCombiner, String resultPath)
+                                          long quantity, boolean useCombiner, String resultPath)
                                                         throws ExecutionException, InterruptedException, IOException {
-        long quantity = 5;
         final KeyValueSource<Long, Movement> source = KeyValueSource.fromMap(movementsMap);
         JobTracker jobTracker = hazelcastInstance.getJobTracker("query-2");
         Job<Long, Movement> job = jobTracker.newJob(source);
@@ -312,10 +315,8 @@ public class Client {
 
 
     public static void destinationAirports(HazelcastInstance hazelcastInstance, IMap<Long, Movement> movementsMap,
-                                                                            boolean useCombiner, String resultPath)
-                                                        throws ExecutionException, InterruptedException, IOException {
-        String specifiedOaci = "SAEZ";//TODO replace with param
-        long quantity = 5; //TODO replace with param
+                                           String specifiedOaci, long quantity, boolean useCombiner, String resultPath)
+                                                        throws ExecutionException, InterruptedException, IOException {//TODO also add quantity
         JobTracker jobTracker = hazelcastInstance.getJobTracker("query-4");
         final KeyValueSource<Long, Movement> source = KeyValueSource.fromMap(movementsMap);
         List<AirportsMovementResult> result = null;

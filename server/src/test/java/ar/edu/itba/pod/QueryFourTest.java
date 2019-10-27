@@ -48,7 +48,7 @@ public class QueryFourTest {
         String expectedPath = "src/test/data/results/expectedResults/emptyQuery4Result.csv";
 
         //Action
-        Client.destinationAirports(hazelcastInstance, movementsMap, false, resultPath);
+        Client.destinationAirports(hazelcastInstance, movementsMap, "SAEZ", 4, false, resultPath);
 
         //Results
         Assert.assertTrue(ResultComparator.compareFiles(expectedPath, resultPath));
@@ -63,7 +63,7 @@ public class QueryFourTest {
         String expectedPath = "src/test/data/results/expectedResults/emptyQuery4Result.csv";
 
         //Action
-        Client.destinationAirports(hazelcastInstance, movementsMap, true, resultPath);
+        Client.destinationAirports(hazelcastInstance, movementsMap, "SAEZ",4,true, resultPath);
 
         //Results
         Assert.assertTrue(ResultComparator.compareFiles(expectedPath, resultPath));
@@ -80,7 +80,7 @@ public class QueryFourTest {
         String expectedPath = "src/test/data/results/expectedResults/query4.csv";
 
         //Action
-        Client.destinationAirports(hazelcastInstance, movementsMap, false, resultPath);
+        Client.destinationAirports(hazelcastInstance, movementsMap, "SAEZ",5,false, resultPath);
 
         //Results
         Assert.assertTrue(ResultComparator.compareFiles(expectedPath, resultPath));
@@ -96,12 +96,27 @@ public class QueryFourTest {
         String expectedPath = "src/test/data/results/expectedResults/query4.csv";
 
         //Action
-        Client.destinationAirports(hazelcastInstance, movementsMap, true, resultPath);
+        Client.destinationAirports(hazelcastInstance, movementsMap, "SAEZ",5, true, resultPath);
 
         //Results
         Assert.assertTrue(ResultComparator.compareFiles(expectedPath, resultPath));
     }
 
+//    @Test
+//    public void allWithSameQuantityWithoutCombinerTest() throws IOException, ExecutionException, InterruptedException {
+//        //Set up
+//        final IMap<Long, Movement> movementsMap = hazelcastInstance.getMap("g12-movimientos");
+//        String movementPath = "src/test/data/movimientos.csv";
+//        loadMaps(movementsMap, movementPath);
+//        String resultPath = "src/test/data/results/answer.csv";
+//        String expectedPath = "src/test/data/results/expectedResults/query4.csv";
+//
+//        //Action
+//        Client.destinationAirports(hazelcastInstance, movementsMap, false, resultPath);
+//
+//        //Results
+//        Assert.assertTrue(ResultComparator.compareFiles(expectedPath, resultPath));
+//    }
     //TODO add one adhoc case and test with the 2 possible combinations
 
 

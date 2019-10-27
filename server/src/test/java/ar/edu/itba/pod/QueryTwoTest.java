@@ -48,7 +48,7 @@ public class QueryTwoTest {
         String expectedPath = "src/test/data/results/expectedResults/emptyQuery2Result.csv";
 
         //Action
-        Client.cabotagePercentage(hazelcastInstance, movementsMap, false, resultPath);
+        Client.cabotagePercentage(hazelcastInstance, movementsMap, 4,false, resultPath);
 
         //Results
         Assert.assertTrue(ResultComparator.compareFiles(expectedPath, resultPath));
@@ -63,7 +63,7 @@ public class QueryTwoTest {
         String expectedPath = "src/test/data/results/expectedResults/emptyQuery2Result.csv";
 
         //Action
-        Client.cabotagePercentage(hazelcastInstance, movementsMap, true, resultPath);
+        Client.cabotagePercentage(hazelcastInstance, movementsMap, 4,true, resultPath);
 
         //Results
         Assert.assertTrue(ResultComparator.compareFiles(expectedPath, resultPath));
@@ -80,7 +80,7 @@ public class QueryTwoTest {
         String expectedPath = "src/test/data/results/expectedResults/query2.csv";
 
         //Action
-        Client.cabotagePercentage(hazelcastInstance, movementsMap, false, resultPath);
+        Client.cabotagePercentage(hazelcastInstance, movementsMap, 5,false, resultPath);
 
         //Results
         Assert.assertTrue(ResultComparator.compareFiles(expectedPath, resultPath));
@@ -96,7 +96,7 @@ public class QueryTwoTest {
         String expectedPath = "src/test/data/results/expectedResults/query2.csv";
 
         //Action
-        Client.cabotagePercentage(hazelcastInstance, movementsMap, true, resultPath);
+        Client.cabotagePercentage(hazelcastInstance, movementsMap, 5,true, resultPath);
 
         //Results
         Assert.assertTrue(ResultComparator.compareFiles(expectedPath, resultPath));
@@ -112,7 +112,7 @@ public class QueryTwoTest {
         String expectedPath = "src/test/data/results/expectedResults/test1Query2Result.csv";
 
         //Action
-        Client.cabotagePercentage(hazelcastInstance, movementsMap, false, resultPath);
+        Client.cabotagePercentage(hazelcastInstance, movementsMap, 5,false, resultPath);
 
         //Results
         Assert.assertTrue(ResultComparator.compareFiles(expectedPath, resultPath));
@@ -128,7 +128,7 @@ public class QueryTwoTest {
         String expectedPath = "src/test/data/results/expectedResults/test1Query2Result.csv";
 
         //Action
-        Client.cabotagePercentage(hazelcastInstance, movementsMap, true, resultPath);
+        Client.cabotagePercentage(hazelcastInstance, movementsMap, 5,true, resultPath);
 
         //Results
         Assert.assertTrue(ResultComparator.compareFiles(expectedPath, resultPath));
