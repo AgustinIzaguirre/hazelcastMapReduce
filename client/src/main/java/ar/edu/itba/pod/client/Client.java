@@ -55,6 +55,7 @@ public class Client {
         solveQuery(queryNumber, hazelcastInstance, airportsMap, movementsMap);
         timeFileWriter.close();
         System.out.println("Finished\n");
+//        hazelcastInstance.shutdown(); //TODO ask if has to shut down or not
     }
 
     private static void loadProperties() {
