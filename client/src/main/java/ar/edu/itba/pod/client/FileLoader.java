@@ -42,7 +42,7 @@ public class FileLoader {
     }
 
     private void loadAirportIndexes(String[] airportData) {
-        for(int i = 0; i < airportData.length; i++) {//TODO java 8 foreach for arrays?
+        for(int i = 0; i < airportData.length; i++) {//TODO java 8 foreach for arrays? but still need to count i
             String currentType = airportData[i].toUpperCase(); //TODO maybe compare with the csv actual name
 
             if(currentType.equals("OACI")) {
@@ -104,7 +104,7 @@ public class FileLoader {
 
 
     private void loadMovementIndexes(String[] movementData) {
-        for(int i = 0; i < movementData.length; i++) {//TODO java 8 foreach for arrays?
+        for(int i = 0; i < movementData.length; i++) {//TODO java 8 foreach for arrays? but still need to count i
             String currentType = movementData[i];
 
             if(currentType.equals("Origen OACI")) {
