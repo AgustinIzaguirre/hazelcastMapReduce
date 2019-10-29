@@ -8,7 +8,6 @@ import java.util.*;
 
 public class PairAirportCollator implements Collator<Map.Entry<String, Long>, List<AirportPairResult>> {
 
-
     @Override
     public List<AirportPairResult> collate(Iterable<Map.Entry<String, Long>> values ) {
         Map<Long, List<String>> airportsOfThousands = getAirportOfThousands(values);
@@ -17,7 +16,7 @@ public class PairAirportCollator implements Collator<Map.Entry<String, Long>, Li
             List<AirportPairResult> pairResults = getAllPair(key, value);
 
             if(pairResults.size() > 0) {
-                airportPairList.addAll(pairResults); //TODO improve with java 8
+                airportPairList.addAll(pairResults);
             }
         });
 
