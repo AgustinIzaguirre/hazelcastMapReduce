@@ -82,9 +82,9 @@ public class Client {
         resultFilePath = outputDirectoryPath + "/query" + queryNumber + "_v2.csv";
         timeFilePath = outputDirectoryPath + "/query" + queryNumber + ".txt";
 
-//        if(queryNumber < 1 || queryNumber > 4) {
-//            throw new InvalidQueryException("Invalid query number.Query number should be 1,2,3 or 4.");// should never happen
-//        }
+        if(queryNumber < 1 || queryNumber > 4) {
+            throw new InvalidQueryException("Invalid query number.Query number should be 1,2,3 or 4.");// should never happen
+        }
 //
 //        if(queryNumber == 2 || queryNumber == 4) {
 //            Optional<String> quantityProperty = Optional.ofNullable(System.getProperty("n"));
@@ -152,8 +152,8 @@ public class Client {
                                     throws ExecutionException, InterruptedException, IOException {
         ResultWriter.writeTime(timeFileWriter, "Inicio del trabajo map/reduce");
         boolean useCombiner = true;//TODO use lowest time combination
-        long startTime = System.currentTimeMillis();
-        long elapsedTime = 0;
+        long startTime = System.currentTimeMillis();//TODO remove
+        long elapsedTime = 0;//TODO remove
 
         switch (queryNumber) {
             case 1:
