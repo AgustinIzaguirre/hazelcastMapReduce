@@ -109,7 +109,7 @@ public class Client {
 //        System.out.println(config.getNetworkConfig().getAddresses()); //TODO diference between addaddresses and setaddresses
       //end of test
 
-//        config.getNetworkConfig().setAddresses(newAddresses); //TODO add in production and set to addd using list instead of array
+//        config.getNetworkConfig().setAddresses(newAddresses); //TODO add in production
         return config;
     }
 
