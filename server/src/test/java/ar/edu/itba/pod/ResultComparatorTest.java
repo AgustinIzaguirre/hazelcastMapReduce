@@ -46,7 +46,7 @@ public class ResultComparatorTest {
     public void smaeLengthDifferentFiles() throws IOException {
         //Set up
         String path1 = "src/test/data/resultComparator/sameLengthFile1.csv";
-        String path2 = "src/test/data/resultComparator/samelengthFile2.csv";
+        String path2 = "src/test/data/resultComparator/sameLengthFile2.csv";
 
 
         //Action
