@@ -47,9 +47,9 @@ public class Client {
 
     public static void main(String[] args) throws ExecutionException, InterruptedException, IOException,
                                                         RequiredPropertyException, InvalidQueryException {
-        queryNumber = 2; //TODO get from params
-        quantity = 5; //TODO remove on production
-        originOaci = "SAEZ"; //TODO remove on production
+//        queryNumber = 1; //TODO get from params
+//        quantity = 5; //TODO remove on production
+//        originOaci = "SAEZ"; //TODO remove on production
         loadProperties();
         ClientConfig config = loadClientConfig();
         final HazelcastInstance hazelcastInstance = HazelcastClient.newHazelcastClient(config);
@@ -58,7 +58,7 @@ public class Client {
         loadData(airportsMap, movementsMap);
         solveQuery(queryNumber, hazelcastInstance, airportsMap, movementsMap);
         timeFileWriter.close();
-        System.out.println("Finished\n");
+        System.out.println("Finished\n");//TODO remove
         hazelcastInstance.shutdown(); //TODO ask if has to shut down or not
 
 
@@ -72,10 +72,10 @@ public class Client {
         Optional<String> addressesProperty = Optional.ofNullable(System.getProperty("addresses"));
         Optional<String> inPathProperty = Optional.ofNullable(System.getProperty("inPath"));
         Optional<String> outPathProperty = Optional.ofNullable(System.getProperty("outPath"));
-//        queryNumber = Integer.parseInt(System.getProperty("queryNumber"));  // TODO use this on production
-//        addresses= addressesProperty.orElseThrow(() -> new RequiredPropertyException("addresses property is required.")).split(";");  // TODO use this on production check if null
-//        inputDirectoryPath = inPathProperty.orElseThrow(() -> new RequiredPropertyException("inPath property is required."));    // TODO use this on production
-//        outputDirectoryPath = outPathProperty.orElseThrow(() -> new RequiredPropertyException("outPath property is required."));  // TODO use this on production
+        queryNumber = Integer.parseInt(System.getProperty("queryNumber"));  // TODO use this on production
+        addresses= addressesProperty.orElseThrow(() -> new RequiredPropertyException("addresses property is required.")).split(";");  // TODO use this on production check if null
+        inputDirectoryPath = inPathProperty.orElseThrow(() -> new RequiredPropertyException("inPath property is required."));    // TODO use this on production
+        outputDirectoryPath = outPathProperty.orElseThrow(() -> new RequiredPropertyException("outPath property is required."));  // TODO use this on production
         airportsFilePath = inputDirectoryPath + "/aeropuertos.csv";
         movementFilePath = inputDirectoryPath + "/movimientos.csv";
 //        resultFilePath = outputDirectoryPath + "/query" + queryNumber + ".csv"; // TODO use this on production
@@ -85,21 +85,21 @@ public class Client {
         if(queryNumber < 1 || queryNumber > 4) {
             throw new InvalidQueryException("Invalid query number.Query number should be 1,2,3 or 4.");// should never happen
         }
-//
-//        if(queryNumber == 2 || queryNumber == 4) {
-//            Optional<String> quantityProperty = Optional.ofNullable(System.getProperty("n"));
-//            quantity = Long.parseLong(quantityProperty.orElseThrow(() -> new RequiredPropertyException("n property is required.")));
-//
-//            if(queryNumber == 2) {
-//                Optional<String> oaciProperty = Optional.ofNullable(System.getProperty("originOaci"));
-//                originOaci = oaciProperty.orElseThrow(() -> new RequiredPropertyException("originOaci property is required."));
-//            }
-//        } //TODO use this on production
+
+        if(queryNumber == 2 || queryNumber == 4) {
+            Optional<String> quantityProperty = Optional.ofNullable(System.getProperty("n"));
+            quantity = Long.parseLong(quantityProperty.orElseThrow(() -> new RequiredPropertyException("n property is required.")));
+
+            if(queryNumber == 2) {
+                Optional<String> oaciProperty = Optional.ofNullable(System.getProperty("originOaci"));
+                originOaci = oaciProperty.orElseThrow(() -> new RequiredPropertyException("originOaci property is required."));
+            }
+        } //TODO use this on production
     }
 
     private static ClientConfig loadClientConfig() throws IOException {
         final ClientConfig config = new XmlClientConfigBuilder("hazelcast.xml").build();//TODO update with ips
-//        List<String> newAddresses = loadAddresses(); //TODO use on production
+        List<String> newAddresses = loadAddresses(); //TODO use on production
 
         //start of test
 //        config.getNetworkConfig().addAddress("10.6.0.2:5701;10.6.0.4:5701".split(";"));
@@ -109,7 +109,7 @@ public class Client {
 //        System.out.println(config.getNetworkConfig().getAddresses()); //TODO diference between addaddresses and setaddresses
       //end of test
 
-//        config.getNetworkConfig().setAddresses(newAddresses); //TODO add in production
+        config.getNetworkConfig().setAddresses(newAddresses); //TODO add in production
         return config;
     }
 
@@ -137,10 +137,10 @@ public class Client {
         long elapsedTime = 0; //TODO remove
 
         if(queryNumber == 1) {
-            fileLoader.loadAirports("aeropuertos.csv", airportsMap);
+            fileLoader.loadAirports(airportsFilePath, airportsMap);
         }
 
-        fileLoader.loadMovements("movimientos.csv", movementsMap);
+        fileLoader.loadMovements(movementFilePath, movementsMap);
         long endTime = System.currentTimeMillis(); //TODO remove
         elapsedTime = endTime - startTime; //TODO remove
         System.out.println("Loading time: " + elapsedTime); //TODO remove
@@ -158,7 +158,7 @@ public class Client {
         switch (queryNumber) {
             case 1:
                 airportsMovementQuery(hazelcastInstance, airportsMap, movementsMap, true, resultFilePath);
-                airportsMovementQueryWithAware(hazelcastInstance, airportsMap, movementsMap, true, resultFilePath);
+//                airportsMovementQueryWithAware(hazelcastInstance, airportsMap, movementsMap, true, resultFilePath);
                 break;
 
             case 2:
@@ -166,8 +166,8 @@ public class Client {
                 break;
 
             case 3:
-//                pairAirportsWithSameThousands(hazelcastInstance, movementsMap, true, resultFilePath);
-                pairAirportsWithSameThousandsWithSecondMapReduce(hazelcastInstance, movementsMap,true, resultFilePath);
+                pairAirportsWithSameThousands(hazelcastInstance, movementsMap, true, resultFilePath);
+//                pairAirportsWithSameThousandsWithSecondMapReduce(hazelcastInstance, movementsMap,true, resultFilePath);
                 break;
 
             case 4:
