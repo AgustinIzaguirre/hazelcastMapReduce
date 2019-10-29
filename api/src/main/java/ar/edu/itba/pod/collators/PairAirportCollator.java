@@ -47,9 +47,7 @@ public class PairAirportCollator implements Collator<Map.Entry<String, Long>, Li
             if(element.getValue() >= 1000) {
                 long thousands = (element.getValue() / 1000) * 1000;
 
-                if(airportsOfThousands.get(thousands) == null) {
-                    airportsOfThousands.put(thousands, new LinkedList<>()); //TODO improve with Java 8
-                }
+                airportsOfThousands.computeIfAbsent(thousands, k -> new LinkedList<>());
 
                 List<String> airports = airportsOfThousands.get(thousands);
                 airports.add(element.getKey());
