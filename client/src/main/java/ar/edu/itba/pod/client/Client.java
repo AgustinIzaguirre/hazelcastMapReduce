@@ -78,8 +78,8 @@ public class Client {
         outputDirectoryPath = outPathProperty.orElseThrow(() -> new RequiredPropertyException("outPath property is required."));  // TODO use this on production
         airportsFilePath = inputDirectoryPath + "/aeropuertos.csv";
         movementFilePath = inputDirectoryPath + "/movimientos.csv";
-//        resultFilePath = outputDirectoryPath + "/query" + queryNumber + ".csv"; // TODO use this on production
-        resultFilePath = outputDirectoryPath + "/query" + queryNumber + "_v2.csv";
+        resultFilePath = outputDirectoryPath + "/query" + queryNumber + ".csv"; // TODO use this on production
+//        resultFilePath = outputDirectoryPath + "/query" + queryNumber + "_v2.csv";
         timeFilePath = outputDirectoryPath + "/query" + queryNumber + ".txt";
 
         if(queryNumber < 1 || queryNumber > 4) {
@@ -90,7 +90,7 @@ public class Client {
             Optional<String> quantityProperty = Optional.ofNullable(System.getProperty("n"));
             quantity = Long.parseLong(quantityProperty.orElseThrow(() -> new RequiredPropertyException("n property is required.")));
 
-            if(queryNumber == 2) {
+            if(queryNumber == 4) {
                 Optional<String> oaciProperty = Optional.ofNullable(System.getProperty("originOaci"));
                 originOaci = oaciProperty.orElseThrow(() -> new RequiredPropertyException("originOaci property is required."));
             }
@@ -98,17 +98,8 @@ public class Client {
     }
 
     private static ClientConfig loadClientConfig() throws IOException {
-        final ClientConfig config = new XmlClientConfigBuilder("hazelcast.xml").build();//TODO update with ips
+        final ClientConfig config = new XmlClientConfigBuilder("hazelcast-client.xml").build();//TODO update with ips
         List<String> newAddresses = loadAddresses(); //TODO use on production
-
-        //start of test
-//        config.getNetworkConfig().addAddress("10.6.0.2:5701;10.6.0.4:5701".split(";"));
-//        newAddresses.add("10.6.0.1:5701");
-//        System.out.println(config.getNetworkConfig().getAddresses());
-//        config.getNetworkConfig().setAddresses(newAddresses);
-//        System.out.println(config.getNetworkConfig().getAddresses()); //TODO diference between addaddresses and setaddresses
-      //end of test
-
         config.getNetworkConfig().setAddresses(newAddresses); //TODO add in production
         return config;
     }
@@ -151,7 +142,7 @@ public class Client {
                                    IMap<String, Airport> airportsMap, IMap<Long, Movement> movementsMap)
                                     throws ExecutionException, InterruptedException, IOException {
         ResultWriter.writeTime(timeFileWriter, "Inicio del trabajo map/reduce");
-        boolean useCombiner = true;//TODO use lowest time combination
+//        boolean useCombiner = true;//TODO use lowest time combination
         long startTime = System.currentTimeMillis();//TODO remove
         long elapsedTime = 0;//TODO remove
 
