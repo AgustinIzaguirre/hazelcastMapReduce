@@ -10,6 +10,7 @@ import ar.edu.itba.pod.models.Airport;
 import ar.edu.itba.pod.models.Movement;
 import ar.edu.itba.pod.reducers.AirportsMovementReducerFactory;
 import ar.edu.itba.pod.reducers.SameThousandReducerFactory;
+import ar.edu.itba.pod.reducers.SameThousandWithPairReducerFactory;
 import ar.edu.itba.pod.results.AirportPairResult;
 import ar.edu.itba.pod.results.AirportsMovementResult;
 import com.hazelcast.client.HazelcastClient;
@@ -159,6 +160,8 @@ public class Client {
             case 3:
                 pairAirportsWithSameThousands(hazelcastInstance, movementsMap, true, resultFilePath);
 //                pairAirportsWithSameThousandsWithSecondMapReduce(hazelcastInstance, movementsMap,true, resultFilePath);
+//                pairAirportsWithSameThousandsPairInReducer(hazelcastInstance, movementsMap,true, resultFilePath);
+
                 break;
 
             case 4:
@@ -257,10 +260,11 @@ public class Client {
         ResultWriter.writeResult2(resultPath, result);
     }
 
+
     public static void pairAirportsWithSameThousands(HazelcastInstance hazelcastInstance,
                                                      IMap<Long, Movement> movementsMap,
                                                      boolean useCombiner, String resultPath)
-                                            throws ExecutionException, InterruptedException, IOException {
+            throws ExecutionException, InterruptedException, IOException {
         final KeyValueSource<Long, Movement> source = KeyValueSource.fromMap(movementsMap);
         JobTracker jobTracker = hazelcastInstance.getJobTracker("query-3");
         List<AirportPairResult> resultList = null;
@@ -282,12 +286,68 @@ public class Client {
             resultList = future.get();
         }
 
-       ResultWriter.writeResult3(resultPath, resultList);
+        ResultWriter.writeResult3(resultPath, resultList);
     }
 
-    public static void pairAirportsWithSameThousandsWithSecondMapReduce(HazelcastInstance hazelcastInstance, IMap<Long,
+    public static void pairAirportsWithSameThousandsPairInReducer(HazelcastInstance hazelcastInstance, IMap<Long,
                                                             Movement> movementsMap, boolean useCombiner, String resultPath)
                                                                 throws ExecutionException, InterruptedException, IOException {
+        //first MapReduce
+        final KeyValueSource<Long, Movement> source = KeyValueSource.fromMap(movementsMap);
+        JobTracker jobTracker = hazelcastInstance.getJobTracker("preCalculation");
+        Map<String, Long> resultMap = null;
+        Job<Long, Movement> job = jobTracker.newJob(source);
+
+        if(useCombiner) {
+            ICompletableFuture<Map<String, Long>> future = job
+                    .mapper(new OaciAirportsMovementMapper())
+                    .combiner(new MovementCombinerFactory())
+                    .reducer(new AirportsMovementReducerFactory())
+                    .submit();
+            resultMap = future.get(); //TODO make a function that does this
+        }
+        else {
+            ICompletableFuture<Map<String, Long>> future = job
+                    .mapper(new OaciAirportsMovementMapper()) //TODO use variable useCombiner
+                    .reducer(new AirportsMovementReducerFactory())
+                    .submit();
+            resultMap = future.get();
+        }
+
+        //second MapReduce
+        String mapName = "g12-airportMovementMap";
+        IMap<String, Long> airportMovementMap = loadMap(hazelcastInstance, resultMap, mapName);
+        final KeyValueSource<String, Long> secondSource = KeyValueSource.fromMap(airportMovementMap);
+        jobTracker = hazelcastInstance.getJobTracker("query-3");
+        List<AirportPairResult> resultList = null;
+        Job<String, Long> secondJob = jobTracker.newJob(secondSource);
+
+        if(useCombiner) {
+            ICompletableFuture<List<AirportPairResult>> secondFuture = secondJob
+                    .mapper(new SameThousandMapper())
+                    .combiner(new SameThousandCombinerFactory())
+                    .reducer(new SameThousandWithPairReducerFactory())
+                    .submit(new JoinPairListCollator());
+            resultList = secondFuture.get();
+        }
+        else {
+            ICompletableFuture<List<AirportPairResult>> secondFuture = secondJob
+                    .mapper(new SameThousandMapper())
+                    .reducer(new SameThousandWithPairReducerFactory())
+                    .submit(new JoinPairListCollator());
+            resultList = secondFuture.get();
+        }
+
+        ResultWriter.writeResult3(resultPath, resultList);
+
+        //clear map
+        airportMovementMap.clear();
+    }
+
+
+    public static void pairAirportsWithSameThousandsWithSecondMapReduce(HazelcastInstance hazelcastInstance, IMap<Long,
+            Movement> movementsMap, boolean useCombiner, String resultPath)
+            throws ExecutionException, InterruptedException, IOException {
         //first MapReduce
         final KeyValueSource<Long, Movement> source = KeyValueSource.fromMap(movementsMap);
         JobTracker jobTracker = hazelcastInstance.getJobTracker("preCalculation");
