@@ -92,8 +92,8 @@ public class Client {
             quantity = Long.parseLong(quantityProperty.orElseThrow(() -> new RequiredPropertyException("n property is required.")));
 
             if(queryNumber == 4) {
-                Optional<String> oaciProperty = Optional.ofNullable(System.getProperty("originOaci"));
-                originOaci = oaciProperty.orElseThrow(() -> new RequiredPropertyException("originOaci property is required."));
+                Optional<String> oaciProperty = Optional.ofNullable(System.getProperty("oaci"));
+                originOaci = oaciProperty.orElseThrow(() -> new RequiredPropertyException("oaci property is required."));
             }
         } //TODO use this on production
     }
@@ -297,22 +297,7 @@ public class Client {
         JobTracker jobTracker = hazelcastInstance.getJobTracker("preCalculation");
         Map<String, Long> resultMap = null;
         Job<Long, Movement> job = jobTracker.newJob(source);
-
-        if(useCombiner) {
-            ICompletableFuture<Map<String, Long>> future = job
-                    .mapper(new OaciAirportsMovementMapper())
-                    .combiner(new MovementCombinerFactory())
-                    .reducer(new AirportsMovementReducerFactory())
-                    .submit();
-            resultMap = future.get(); //TODO make a function that does this
-        }
-        else {
-            ICompletableFuture<Map<String, Long>> future = job
-                    .mapper(new OaciAirportsMovementMapper()) //TODO use variable useCombiner
-                    .reducer(new AirportsMovementReducerFactory())
-                    .submit();
-            resultMap = future.get();
-        }
+        resultMap = makeFirstMapReduce(job, useCombiner);
 
         //second MapReduce
         String mapName = "g12-airportMovementMap";
@@ -344,6 +329,25 @@ public class Client {
         airportMovementMap.clear();
     }
 
+    private static Map<String,Long> makeFirstMapReduce(Job<Long, Movement> job, boolean useCombiner)
+                                                        throws ExecutionException, InterruptedException {
+        if(useCombiner) {
+            ICompletableFuture<Map<String, Long>> future = job
+                    .mapper(new OaciAirportsMovementMapper())
+                    .combiner(new MovementCombinerFactory())
+                    .reducer(new AirportsMovementReducerFactory())
+                    .submit();
+            return future.get();
+        }
+        else {
+            ICompletableFuture<Map<String, Long>> future = job
+                    .mapper(new OaciAirportsMovementMapper())
+                    .reducer(new AirportsMovementReducerFactory())
+                    .submit();
+            return future.get();
+        }
+    }
+
 
     public static void pairAirportsWithSameThousandsWithSecondMapReduce(HazelcastInstance hazelcastInstance, IMap<Long,
             Movement> movementsMap, boolean useCombiner, String resultPath)
@@ -353,22 +357,7 @@ public class Client {
         JobTracker jobTracker = hazelcastInstance.getJobTracker("preCalculation");
         Map<String, Long> resultMap = null;
         Job<Long, Movement> job = jobTracker.newJob(source);
-
-        if(useCombiner) {
-            ICompletableFuture<Map<String, Long>> future = job
-                    .mapper(new OaciAirportsMovementMapper())
-                    .combiner(new MovementCombinerFactory())
-                    .reducer(new AirportsMovementReducerFactory())
-                    .submit();
-            resultMap = future.get();
-        }
-        else {
-            ICompletableFuture<Map<String, Long>> future = job
-                    .mapper(new OaciAirportsMovementMapper()) //TODO use variable useCombiner
-                    .reducer(new AirportsMovementReducerFactory())
-                    .submit();
-            resultMap = future.get();
-        }
+        resultMap = makeFirstMapReduce(job, useCombiner);
 
         //second MapReduce
         String mapName = "g12-airportMovementMap";
