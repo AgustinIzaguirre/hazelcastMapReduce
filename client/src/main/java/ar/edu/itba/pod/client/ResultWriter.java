@@ -10,8 +10,10 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.sql.Timestamp;
 import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -67,7 +69,7 @@ public class ResultWriter {
 //                double percentage = 100 * ((double)element.getMovements() / (double)total.get());  Rounded
                 double percentage = 100 * ((double)element.getMovements() / (double)total.get());
                 percentage = Math.floor(percentage * 100) / 100; // Truncated
-                String percentageFormated = new DecimalFormat("#.00").format(percentage) + "%";
+                String percentageFormated = new DecimalFormat("#.00", new DecimalFormatSymbols(Locale.US)).format(percentage) + "%";
                 percentageFormated = percentageFormated.charAt(0) == '.' ? 0 + percentageFormated : percentageFormated;
                 result2Writer.write(element.getKey() + ";" + percentageFormated + "\n");
             } catch (IOException e) {
