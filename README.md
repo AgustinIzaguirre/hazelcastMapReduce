@@ -12,7 +12,7 @@ Distributed Processing with MapReduce for airports information.
 1. cd to folder containing .tar.gz
 1. `tar -xvf POD_TPE2_G12.tar.gz`
 1. `cd hazelcastMapReduce`
-1. `mvn clean install`
+1. `mvn clean install -DskipTests=true`
 
 ## Running from source code
 After executing `mvn clean install` on the same directory:
@@ -23,6 +23,8 @@ Run with CWD in root folder
 1. `tar -xvf hazelcastMapReduce-server-1.0-SNAPSHOT-bin.tar.gz`
 1. `cd hazelcastMapReduce-server-1.0-SNAPSHOT`
 1. `chmod u+x *.sh`
+1. `check that hazelcast.xml configuraion of network > interfaces > interface 
+pattern matches your network by default is set to ips of type 10.xx.xx.xx `
 1. `bash ./run-server.sh`
 
 ### Running client
