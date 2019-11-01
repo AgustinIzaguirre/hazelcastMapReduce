@@ -35,7 +35,7 @@ Run with CWD in root folder
 1. `tar -xvf hazelcastMapReduce-client-1.0-SNAPSHOT-bin.tar.gz`
 1. `cd hazelcastMapReduce-client-1.0-SNAPSHOT`
 1. `chmod u+x query*`
-1. `bash ./query1.sh -Daddresses='xx.xx.xx.xx:XXXX;yy.yy.yy.yy:YYYY' -DinPath=XX
+1. `bash ./query1 -Daddresses='xx.xx.xx.xx:XXXX;yy.yy.yy.yy:YYYY' -DinPath=XX
         -DoutPath=YY`
 
  Where addresses is a list of ip (xx.xx.xx.xx) and port (XXXX).
@@ -49,7 +49,7 @@ Run with CWD in root folder
 1. `tar -xvf hazelcastMapReduce-client-1.0-SNAPSHOT-bin.tar.gz`
 1. `cd hazelcastMapReduce-client-1.0-SNAPSHOT`
 1. `chmod u+x query*`
-1. `bash ./query2.sh -Daddresses='xx.xx.xx.xx:XXXX;yy.yy.yy.yy:YYYY' -DinPath=XX
+1. `bash ./query2 -Daddresses='xx.xx.xx.xx:XXXX;yy.yy.yy.yy:YYYY' -DinPath=XX
           -DoutPath=YY -Dn=N`
 
 Where addresses is a list of ip (xx.xx.xx.xx) and port (XXXX).
@@ -64,7 +64,7 @@ Run with CWD in root folder
 1. `tar -xvf hazelcastMapReduce-client-1.0-SNAPSHOT-bin.tar.gz`
 1. `cd hazelcastMapReduce-client-1.0-SNAPSHOT`
 1. `chmod u+x query*`
-1. `bash ./query3.sh -Daddresses='xx.xx.xx.xx:XXXX;yy.yy.yy.yy:YYYY' -DinPath=XX
+1. `bash ./query3 -Daddresses='xx.xx.xx.xx:XXXX;yy.yy.yy.yy:YYYY' -DinPath=XX
        -DoutPath=YY`
 
 Where addresses is a list of ip (xx.xx.xx.xx) and port (XXXX).
@@ -79,7 +79,7 @@ Run with CWD in root folder
 1. `tar -xvf hazelcastMapReduce-client-1.0-SNAPSHOT-bin.tar.gz`
 1. `cd hazelcastMapReduce-client-1.0-SNAPSHOT`
 1. `chmod u+x query*`
-1. `bash ./query4.sh -Daddresses='xx.xx.xx.xx:XXXX;yy.yy.yy.yy:YYYY' -DinPath=XX
+1. `bash ./query4 -Daddresses='xx.xx.xx.xx:XXXX;yy.yy.yy.yy:YYYY' -DinPath=XX
        -DoutPath=YY -Doaci=CODE -Dn=N`
 
 Where addresses is a list of ip (xx.xx.xx.xx) and port (XXXX).
