@@ -58,12 +58,6 @@ public class Client {
         solveQuery(queryNumber, hazelcastInstance, airportsMap, movementsMap);
         timeFileWriter.close();
         hazelcastInstance.shutdown();
-
-
-        Map<Integer, List<Integer>> map = new HashMap<>();
-        map.forEach((key,value)-> {
-            System.out.println("hola");
-        });
     }
 
     private static void loadProperties() throws RequiredPropertyException, InvalidQueryException {
