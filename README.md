@@ -15,7 +15,7 @@ Distributed Processing with MapReduce for airports information.
 1. `mvn clean install -DskipTests=true`
 
 ## Running from source code
-After executing `mvn clean install` on the same directory:
+After executing `mvn clean install -DskipTests=true` on the same directory:
 
 ### Running server
 Run with CWD in root folder
