@@ -5,6 +5,7 @@ import ar.edu.itba.pod.models.Movement;
 import com.hazelcast.core.IMap;
 
 import java.io.*;
+import java.util.Optional;
 
 public class FileLoader {
     //airports indexes
@@ -31,10 +32,8 @@ public class FileLoader {
             line = airportReader.readLine();
             if(line != null) {
                 airportData = line.split(";");
-                Airport currentAirport = loadAirport(airportData);
-                if(currentAirport != null) { //TODO ADD optional
-                    map.put(currentAirport.getOaciCode(), currentAirport);
-                }
+                Optional<Airport> currentAirport = loadAirport(airportData);
+                currentAirport.ifPresent(airport -> map.put(airport.getOaciCode(), airport));
             }
         } while(line != null);
 
@@ -42,8 +41,8 @@ public class FileLoader {
     }
 
     private void loadAirportIndexes(String[] airportData) {
-        for(int i = 0; i < airportData.length; i++) {//TODO java 8 foreach for arrays? but still need to count i
-            String currentType = airportData[i].toUpperCase(); //TODO maybe compare with the csv actual name
+        for(int i = 0; i < airportData.length; i++) {
+            String currentType = airportData[i].toUpperCase();
 
             if(currentType.equals("OACI")) {
                 airportOaciCodeIndex = i;
@@ -57,14 +56,14 @@ public class FileLoader {
         }
     }
 
-    private Airport loadAirport(String[] airportData) {
+    private Optional<Airport> loadAirport(String[] airportData) {
         String name = null, province = null, oaciCode = null;
 
         if(airportData[airportOaciCodeIndex].length() > 0) {
             oaciCode = airportData[airportOaciCodeIndex];
         }
         else {
-            return null;
+            return Optional.empty();
         }
 
         if(airportData[airportNameIndex].length() > 0) {
@@ -75,7 +74,7 @@ public class FileLoader {
             province = airportData[airportProvinceIndex];
         }
 
-        return new Airport(name, province, oaciCode);
+        return Optional.of(new Airport(name, province, oaciCode));
     }
 
     public void loadMovements(String path, IMap<Long, Movement> map) throws IOException {
@@ -90,11 +89,8 @@ public class FileLoader {
 
             if(line != null) {
                 movementData = line.split(";");
-                Movement currentMovement = loadMovement(movementData);
-
-                if(currentMovement != null) { //TODO ADD optional
-                    map.put(currentMovement.getId(), currentMovement);
-                }
+                Optional<Movement> currentMovementOptional = loadMovement(movementData);
+                currentMovementOptional.ifPresent(currentMovement -> map.put(currentMovement.getId(), currentMovement));
             }
         } while(line != null);
 
@@ -104,7 +100,7 @@ public class FileLoader {
 
 
     private void loadMovementIndexes(String[] movementData) {
-        for(int i = 0; i < movementData.length; i++) {//TODO java 8 foreach for arrays? but still need to count i
+        for(int i = 0; i < movementData.length; i++) {
             String currentType = movementData[i];
 
             if(currentType.equals("Origen OACI")) {
@@ -127,7 +123,7 @@ public class FileLoader {
             }
         }
     }
-    private Movement loadMovement(String[] movementData) {
+    private Optional<Movement> loadMovement(String[] movementData) {
         String origin = null, destination = null, airline = null;
         String flightClass = null, clasification = null, type = null;
 
@@ -156,10 +152,10 @@ public class FileLoader {
         }
 
         if(origin == null || destination == null) {
-            return null;
+            return Optional.empty();
         }
 
-        return new Movement(type, flightClass, origin, destination, airline, clasification);
+        return Optional.of(new Movement(type, flightClass, origin, destination, airline, clasification));
     }
 }
 

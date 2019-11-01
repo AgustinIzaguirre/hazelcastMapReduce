@@ -383,7 +383,7 @@ public class Client {
 
     public static void destinationAirports(HazelcastInstance hazelcastInstance, IMap<Long, Movement> movementsMap,
                                            String specifiedOaci, long quantity, boolean useCombiner, String resultPath)
-                                                        throws ExecutionException, InterruptedException, IOException {//TODO also add quantity
+                                                        throws ExecutionException, InterruptedException, IOException {
         JobTracker jobTracker = hazelcastInstance.getJobTracker("query-4");
         final KeyValueSource<Long, Movement> source = KeyValueSource.fromMap(movementsMap);
         List<AirportsMovementResult> result = null;

@@ -51,7 +51,7 @@ public class CabotageFlightsCollator implements Collator<Map.Entry<String, Long>
 
         if(reducedList.size() > 0 ) {
             reducedList.add(new AirportsMovementResult("Otros", totalOthers.get()));
-        }// TODO check what happens if totalOthers.get() == 0
+        }
 
         return reducedList;
     }

@@ -20,7 +20,7 @@ public class Airport implements Serializable {
 
     public String getProvince() {
         return province;
-    } //TODO maybe delete on final version
+    }
 
     public String getOaciCode() {
         return oaciCode;

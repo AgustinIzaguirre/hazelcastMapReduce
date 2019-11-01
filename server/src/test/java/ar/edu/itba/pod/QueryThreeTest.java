@@ -26,12 +26,12 @@ public class QueryThreeTest {
     @BeforeClass
     public static void startServer() throws IOException {
         Server.startServer("src/test/data/hazelcast.xml");
-        hazelcastInstance = createClient(); //TODO maybbe singleton so as not to reload for every class
+        hazelcastInstance = createClient();
     }
 
     private static HazelcastInstance createClient() throws IOException {
         ClientConfig config = new XmlClientConfigBuilder("src/test/data/hazelcast.xml").build();
-        return HazelcastClient.newHazelcastClient(config); //TODO maybbe singleton so as not to reload for every class
+        return HazelcastClient.newHazelcastClient(config);
     }
 
     private static void loadMaps(IMap<Long, Movement> movementMap, String movementPath) throws IOException {

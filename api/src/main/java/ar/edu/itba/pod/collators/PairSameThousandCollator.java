@@ -17,7 +17,7 @@ public class PairSameThousandCollator implements Collator<Map.Entry<Long, List<S
         values.forEach(element -> {
             List<AirportPairResult> pairResults = getAllPair(element.getKey(), element.getValue());
             if (pairResults.size() > 0) {
-                airportPairList.addAll(pairResults); //TODO improve with java 8
+                airportPairList.addAll(pairResults);
             }
         });
         airportPairList.sort((pair1, pair2) -> {

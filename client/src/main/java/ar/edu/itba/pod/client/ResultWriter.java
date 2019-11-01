@@ -26,7 +26,7 @@ public class ResultWriter {
         resultList.forEach(element-> {
             Optional<Airport> airport = Optional.ofNullable(airportsMap.get(element.getKey()));
 
-            if(airport.isPresent()) { //TODO mejorar con java 8
+            if(airport.isPresent()) {
                 Airport currentAirport = airport.get();
                 String denomination = currentAirport.getName() != null ? currentAirport.getName() : "";
                 try {
