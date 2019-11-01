@@ -18,12 +18,13 @@ public class MovementCombinerFactory  implements CombinerFactory<String, Long, L
         public void combine(Long value) {
             sum++;
         }
+
         @Override
         public Long finalizeChunk() {
             return sum;
         }
-        @
-                Override
+
+        @Override
         public void reset() {
             sum = 0;
         }

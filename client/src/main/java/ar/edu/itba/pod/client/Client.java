@@ -48,9 +48,7 @@ public class Client {
 
     public static void main(String[] args) throws ExecutionException, InterruptedException, IOException,
                                                         RequiredPropertyException, InvalidQueryException {
-//        queryNumber = 1; //TODO get from params
-//        quantity = 5; //TODO remove on production
-//        originOaci = "SAEZ"; //TODO remove on production
+
         loadProperties();
         ClientConfig config = loadClientConfig();
         final HazelcastInstance hazelcastInstance = HazelcastClient.newHazelcastClient(config);
@@ -59,8 +57,7 @@ public class Client {
         loadData(airportsMap, movementsMap);
         solveQuery(queryNumber, hazelcastInstance, airportsMap, movementsMap);
         timeFileWriter.close();
-        System.out.println("Finished\n");//TODO remove
-        hazelcastInstance.shutdown(); //TODO ask if has to shut down or not
+        hazelcastInstance.shutdown();
 
 
         Map<Integer, List<Integer>> map = new HashMap<>();
@@ -73,14 +70,13 @@ public class Client {
         Optional<String> addressesProperty = Optional.ofNullable(System.getProperty("addresses"));
         Optional<String> inPathProperty = Optional.ofNullable(System.getProperty("inPath"));
         Optional<String> outPathProperty = Optional.ofNullable(System.getProperty("outPath"));
-        queryNumber = Integer.parseInt(System.getProperty("queryNumber"));  // TODO use this on production
-        addresses= addressesProperty.orElseThrow(() -> new RequiredPropertyException("addresses property is required.")).split(";");  // TODO use this on production check if null
-        inputDirectoryPath = inPathProperty.orElseThrow(() -> new RequiredPropertyException("inPath property is required."));    // TODO use this on production
-        outputDirectoryPath = outPathProperty.orElseThrow(() -> new RequiredPropertyException("outPath property is required."));  // TODO use this on production
+        queryNumber = Integer.parseInt(System.getProperty("queryNumber"));
+        addresses= addressesProperty.orElseThrow(() -> new RequiredPropertyException("addresses property is required.")).split(";");
+        inputDirectoryPath = inPathProperty.orElseThrow(() -> new RequiredPropertyException("inPath property is required."));
+        outputDirectoryPath = outPathProperty.orElseThrow(() -> new RequiredPropertyException("outPath property is required."));
         airportsFilePath = inputDirectoryPath + "/aeropuertos.csv";
         movementFilePath = inputDirectoryPath + "/movimientos.csv";
-        resultFilePath = outputDirectoryPath + "/query" + queryNumber + ".csv"; // TODO use this on production
-//        resultFilePath = outputDirectoryPath + "/query" + queryNumber + "_v2.csv";
+        resultFilePath = outputDirectoryPath + "/query" + queryNumber + ".csv";
         timeFilePath = outputDirectoryPath + "/query" + queryNumber + ".txt";
 
         if(queryNumber < 1 || queryNumber > 4) {
@@ -95,20 +91,20 @@ public class Client {
                 Optional<String> oaciProperty = Optional.ofNullable(System.getProperty("oaci"));
                 originOaci = oaciProperty.orElseThrow(() -> new RequiredPropertyException("oaci property is required."));
             }
-        } //TODO use this on production
+        }
     }
 
     private static ClientConfig loadClientConfig() throws IOException {
-        final ClientConfig config = new XmlClientConfigBuilder("hazelcast-client.xml").build();//TODO update with ips
-        List<String> newAddresses = loadAddresses(); //TODO use on production
-        config.getNetworkConfig().setAddresses(newAddresses); //TODO add in production
+        final ClientConfig config = new XmlClientConfigBuilder("hazelcast-client.xml").build();
+        List<String> newAddresses = loadAddresses();
+        config.getNetworkConfig().setAddresses(newAddresses);
         return config;
     }
 
     private static List<String> loadAddresses() {
         List<String> newAddresses = new LinkedList<>();
 
-        for(int i = 0; i < addresses.length; i++) { //TODO java 8 maybbe has for each for array
+        for(int i = 0; i < addresses.length; i++) {
             newAddresses.add(addresses[i]);
         }
 
@@ -117,7 +113,7 @@ public class Client {
 
     private static void loadData(IMap<String, Airport> airportsMap, IMap<Long, Movement> movementsMap) throws IOException {
         //set time file parameters
-        timeFile = new FileWriter(timeFilePath) ;//TODO replace with param
+        timeFile = new FileWriter(timeFilePath) ;
         timeFileWriter = new BufferedWriter(timeFile);
         //clear maps
         airportsMap.clear();
@@ -125,17 +121,12 @@ public class Client {
         //load maps
         FileLoader fileLoader = new FileLoader();
         ResultWriter.writeTime(timeFileWriter, "Inicio de la lectura del archivo");
-        long startTime = System.currentTimeMillis(); //TODO remove
-        long elapsedTime = 0; //TODO remove
 
         if(queryNumber == 1) {
             fileLoader.loadAirports(airportsFilePath, airportsMap);
         }
 
         fileLoader.loadMovements(movementFilePath, movementsMap);
-        long endTime = System.currentTimeMillis(); //TODO remove
-        elapsedTime = endTime - startTime; //TODO remove
-        System.out.println("Loading time: " + elapsedTime); //TODO remove
         ResultWriter.writeTime(timeFileWriter, "Fin de lectura del archivo");
     }
 
@@ -143,9 +134,6 @@ public class Client {
                                    IMap<String, Airport> airportsMap, IMap<Long, Movement> movementsMap)
                                     throws ExecutionException, InterruptedException, IOException {
         ResultWriter.writeTime(timeFileWriter, "Inicio del trabajo map/reduce");
-//        boolean useCombiner = true;//TODO use lowest time combination
-        long startTime = System.currentTimeMillis();//TODO remove
-        long elapsedTime = 0;//TODO remove
 
         switch (queryNumber) {
             case 1:
@@ -170,9 +158,6 @@ public class Client {
         }
 
         ResultWriter.writeTime(timeFileWriter, "Fin del trabajo map/reduce");
-        long endTime = System.currentTimeMillis(); //TODO remove
-        elapsedTime = endTime - startTime; //TODO remove
-        System.out.println("Processing time: " + elapsedTime); //TODO remove
     }
 
 
