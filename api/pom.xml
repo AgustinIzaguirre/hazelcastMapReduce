@@ -9,7 +9,7 @@
   <groupId>ar.edu.itba.pod</groupId>
   <artifactId>hazelcastMapReduce-api</artifactId>
   <version>1.0-SNAPSHOT</version>
-  <name>htpe2-g12-api</name>
+  <name>tpe2-g12-api</name>
   <dependencies>
     <dependency>
       <groupId>com.hazelcast</groupId>
